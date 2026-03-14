@@ -377,6 +377,115 @@
             </table>
           </div>
         </div>
+
+        <!-- Galerie Panel -->
+        <div class="panel panel--full" id="galerie-admin" style="margin-top: 1.5rem">
+          <div class="panel-header">
+            <h2>Gestion de la galerie</h2>
+            <div class="panel-header-actions">
+              <span class="inscrits-count" id="galerie-count">0 œuvre</span>
+            </div>
+          </div>
+          <div class="panel-body">
+            <!-- Zone d'upload image -->
+            <div class="galerie-upload-zone" id="galerie-upload-zone">
+              <div class="csv-upload-zone__inner">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  aria-hidden="true"
+                >
+                  <rect x="3" y="3" width="18" height="18" rx="2" />
+                  <circle cx="8.5" cy="8.5" r="1.5" />
+                  <path d="m21 15-5-5L5 21" />
+                </svg>
+                <div>
+                  <p class="csv-upload-zone__label">Ajouter une œuvre</p>
+                  <p class="csv-upload-zone__hint">
+                    Image JPG, PNG ou WebP — max 4 Mo
+                  </p>
+                </div>
+              </div>
+              <input
+                type="file"
+                id="galerie-file-input"
+                accept="image/jpeg,image/png,image/webp"
+                aria-label="Choisir une image"
+              />
+            </div>
+
+            <!-- Preview (masqué par défaut) -->
+            <div id="galerie-preview" class="galerie-preview" hidden>
+              <img
+                id="galerie-preview-img"
+                class="galerie-preview__img"
+                src=""
+                alt="Aperçu"
+              />
+              <div class="galerie-preview__fields">
+                <div class="field-group">
+                  <label for="galerie-title">Titre de l'œuvre</label>
+                  <input
+                    id="galerie-title"
+                    type="text"
+                    placeholder="Ex : Estran I"
+                    required
+                  />
+                </div>
+                <div class="field-group">
+                  <label for="galerie-technique">Technique</label>
+                  <input
+                    id="galerie-technique"
+                    type="text"
+                    placeholder="Ex : Aquarelle sur grand format"
+                  />
+                </div>
+                <div class="galerie-preview__actions">
+                  <button
+                    class="btn-send-mail"
+                    id="btn-galerie-save"
+                    type="button"
+                  >
+                    Enregistrer
+                  </button>
+                  <button
+                    class="btn-preview"
+                    id="btn-galerie-cancel"
+                    type="button"
+                  >
+                    Annuler
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div id="galerie-status" class="csv-status" hidden></div>
+          </div>
+
+          <!-- Grille des œuvres -->
+          <div class="panel-body panel-body--no-pad">
+            <div id="galerie-empty" class="inscrits-empty">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.2"
+                aria-hidden="true"
+              >
+                <rect x="3" y="3" width="18" height="18" rx="2" />
+                <circle cx="8.5" cy="8.5" r="1.5" />
+                <path d="m21 15-5-5L5 21" />
+              </svg>
+              <p>Aucune œuvre dans la galerie</p>
+              <span>Ajoutez des œuvres via la zone ci-dessus</span>
+            </div>
+            <div id="galerie-grid" class="galerie-admin-grid" hidden></div>
+          </div>
+        </div>
       </main>
     </div>
     <!-- /view-admin -->

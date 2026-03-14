@@ -942,3 +942,136 @@ a {
   border-radius: 2px;
   padding: 0 1px;
 }
+
+/* ═══════════════════════════════════════════════════════════
+   GALERIE — Upload, preview & grille admin
+   ═══════════════════════════════════════════════════════════ */
+
+/* Upload zone */
+.galerie-upload-zone {
+  position: relative;
+  border: 1px dashed var(--c-border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  cursor: pointer;
+  transition:
+    border-color var(--transition),
+    background var(--transition);
+  overflow: hidden;
+}
+.galerie-upload-zone:hover,
+.galerie-upload-zone.drag-over {
+  border-color: var(--c-gold);
+  background: var(--c-gold-dim);
+}
+.galerie-upload-zone input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  pointer-events: none;
+}
+
+/* Preview */
+.galerie-preview {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  margin-top: 1rem;
+}
+.galerie-preview__img {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  background: var(--c-bg);
+  flex-shrink: 0;
+}
+.galerie-preview__fields {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.galerie-preview__actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+/* Admin grid */
+.galerie-admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+  padding: 1.5rem;
+}
+.galerie-admin-card {
+  position: relative;
+  background: var(--c-bg);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color var(--transition);
+}
+.galerie-admin-card:hover {
+  border-color: var(--c-gold);
+}
+.galerie-admin-card__img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  display: block;
+}
+.galerie-admin-card__info {
+  padding: 0.75rem;
+}
+.galerie-admin-card__title {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--c-silver);
+  margin-bottom: 0.15rem;
+}
+.galerie-admin-card__technique {
+  font-size: 0.65rem;
+  color: var(--c-ash);
+}
+
+/* Delete button */
+.btn-remove-artwork {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  background: rgba(13, 13, 13, 0.75);
+  border: none;
+  color: var(--c-mid);
+  cursor: pointer;
+  padding: 0.25rem 0.45rem;
+  font-size: 0.75rem;
+  line-height: 1;
+  border-radius: var(--radius);
+  transition:
+    color var(--transition),
+    background var(--transition);
+  opacity: 0;
+}
+.galerie-admin-card:hover .btn-remove-artwork {
+  opacity: 1;
+}
+.btn-remove-artwork:hover {
+  color: #e74c3c;
+  background: rgba(192, 57, 43, 0.2);
+}
+
+/* Responsive preview */
+@media (max-width: 600px) {
+  .galerie-preview {
+    flex-direction: column;
+  }
+  .galerie-preview__img {
+    width: 100%;
+    height: auto;
+    max-height: 200px;
+  }
+}

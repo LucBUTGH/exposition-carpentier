@@ -43,6 +43,7 @@ const UI = {
     if (this.adminUserSpan) this.adminUserSpan.textContent = username;
     initDate();
     updateMailingUI();
+    loadGalerie();
   },
 
   setLoginError(msg) {
@@ -377,6 +378,7 @@ function initQuickLinks() {
     const handler = () => {
       const action = link.dataset.action;
       if (action === "site") window.open("/index.html", "_blank");
+      else if (action === "galerie") location.hash = "#galerie-admin";
       else showToast(`Action « ${action} » — à implémenter.`);
     };
     link.addEventListener("click", handler);
@@ -398,6 +400,192 @@ function initDate() {
   });
 }
 
+/* ── Gallery management ── */
+let galerieArtworks = [];
+let galerieSelectedFile = null;
+
+async function loadGalerie() {
+  const { ok, data } = await apiGet("/api/gallery");
+  if (ok) {
+    galerieArtworks = data.artworks || [];
+    renderGalerie();
+  }
+}
+
+function renderGalerie() {
+  const empty = $("#galerie-empty");
+  const grid = $("#galerie-grid");
+  const counter = $("#galerie-count");
+
+  if (!grid) return;
+
+  const n = galerieArtworks.length;
+  if (counter) counter.textContent = `${n} œuvre${n > 1 ? "s" : ""}`;
+
+  if (n === 0) {
+    empty?.removeAttribute("hidden");
+    grid?.setAttribute("hidden", "");
+    return;
+  }
+
+  empty?.setAttribute("hidden", "");
+  grid?.removeAttribute("hidden");
+
+  grid.innerHTML = galerieArtworks
+    .map(
+      (a) => `
+    <div class="galerie-admin-card" data-id="${a.id}">
+      <img src="${a.imageUrl}" alt="${a.title}" class="galerie-admin-card__img" />
+      <div class="galerie-admin-card__info">
+        <p class="galerie-admin-card__title">${a.title}</p>
+        <span class="galerie-admin-card__technique">${a.technique || ""}</span>
+      </div>
+      <button class="btn-remove-artwork" data-id="${a.id}" title="Supprimer" aria-label="Supprimer ${a.title}">✕</button>
+    </div>`,
+    )
+    .join("");
+
+  grid.querySelectorAll(".btn-remove-artwork").forEach((btn) => {
+    btn.addEventListener("click", () => deleteArtwork(btn.dataset.id));
+  });
+}
+
+async function deleteArtwork(id) {
+  if (!confirm("Supprimer cette œuvre de la galerie ?")) return;
+
+  const res = await fetch(`/api/gallery?id=${id}`, {
+    method: "DELETE",
+    credentials: "same-origin",
+  });
+  const data = await res.json().catch(() => ({}));
+
+  if (res.ok) {
+    galerieArtworks = galerieArtworks.filter((a) => a.id !== id);
+    renderGalerie();
+    showToast("Œuvre supprimée.");
+  } else {
+    showToast(data.error || "Erreur lors de la suppression.");
+  }
+}
+
+function initGalerie() {
+  const zone = $("#galerie-upload-zone");
+  const fileInput = $("#galerie-file-input");
+  const preview = $("#galerie-preview");
+  const previewImg = $("#galerie-preview-img");
+  const saveBtn = $("#btn-galerie-save");
+  const cancelBtn = $("#btn-galerie-cancel");
+  const statusEl = $("#galerie-status");
+
+  if (!zone || !fileInput) return;
+
+  zone.addEventListener("click", () => fileInput.click());
+  zone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    zone.classList.add("drag-over");
+  });
+  zone.addEventListener("dragleave", () => zone.classList.remove("drag-over"));
+  zone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    zone.classList.remove("drag-over");
+    const file = e.dataTransfer.files[0];
+    if (file) showImagePreview(file);
+  });
+  fileInput.addEventListener("change", () => {
+    if (fileInput.files[0]) showImagePreview(fileInput.files[0]);
+    fileInput.value = "";
+  });
+
+  function showImagePreview(file) {
+    if (!file.type.startsWith("image/")) {
+      showGalerieStatus("error", "Seules les images sont acceptées.");
+      return;
+    }
+    if (file.size > 4 * 1024 * 1024) {
+      showGalerieStatus("error", "Image trop volumineuse (max 4 Mo).");
+      return;
+    }
+    galerieSelectedFile = file;
+    previewImg.src = URL.createObjectURL(file);
+    preview.removeAttribute("hidden");
+    zone.setAttribute("hidden", "");
+    $("#galerie-title").value = "";
+    $("#galerie-technique").value = "";
+    $("#galerie-title").focus();
+  }
+
+  cancelBtn?.addEventListener("click", () => {
+    preview.setAttribute("hidden", "");
+    zone.removeAttribute("hidden");
+    galerieSelectedFile = null;
+  });
+
+  saveBtn?.addEventListener("click", async () => {
+    const title = $("#galerie-title")?.value.trim();
+    const technique = $("#galerie-technique")?.value.trim();
+
+    if (!title) {
+      showGalerieStatus("error", "Le titre est requis.");
+      return;
+    }
+    if (!galerieSelectedFile) {
+      showGalerieStatus("error", "Aucune image sélectionnée.");
+      return;
+    }
+
+    saveBtn.disabled = true;
+    saveBtn.textContent = "Envoi…";
+    showGalerieStatus("loading", "Upload en cours…");
+
+    try {
+      const base64 = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(",")[1]);
+        reader.readAsDataURL(galerieSelectedFile);
+      });
+
+      const res = await fetch("/api/gallery", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title,
+          technique,
+          image: base64,
+          imageType: galerieSelectedFile.type,
+        }),
+        credentials: "same-origin",
+      });
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok) {
+        galerieArtworks.push(data.artwork);
+        renderGalerie();
+        preview.setAttribute("hidden", "");
+        zone.removeAttribute("hidden");
+        galerieSelectedFile = null;
+        showGalerieStatus("success", "Œuvre ajoutée avec succès.");
+        showToast("Œuvre ajoutée à la galerie.");
+      } else {
+        showGalerieStatus("error", data.error || "Erreur lors de l'upload.");
+      }
+    } catch {
+      showGalerieStatus("error", "Erreur réseau.");
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.textContent = "Enregistrer";
+    }
+  });
+
+  function showGalerieStatus(type, message) {
+    if (!statusEl) return;
+    statusEl.textContent = message;
+    statusEl.className = `csv-status csv-status--${type}`;
+    statusEl.removeAttribute("hidden");
+    if (type !== "loading")
+      setTimeout(() => statusEl.setAttribute("hidden", ""), 5000);
+  }
+}
+
 /* ── Init ── */
 document.addEventListener("DOMContentLoaded", async () => {
   UI.init();
@@ -406,6 +594,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   initMailForm();
   initCsvUpload();
   initInscrits();
+  initGalerie();
   initQuickLinks();
   await checkSession();
 });

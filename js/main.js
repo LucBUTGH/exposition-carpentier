@@ -40,6 +40,40 @@ function initReveal() {
   els.forEach(el => observer.observe(el));
 }
 
+/* ── Dynamic gallery loading ────────────────────────────── */
+async function initGallery() {
+  const grid = $('.gallery-grid');
+  if (!grid) return;
+
+  try {
+    const res = await fetch('/api/gallery');
+    const data = await res.json();
+    if (!data.ok || !data.artworks?.length) return;
+
+    grid.innerHTML = '';
+
+    data.artworks.forEach((artwork, i) => {
+      const delay = i % 3;
+      const article = document.createElement('article');
+      article.className = `gallery-item reveal${delay ? ` reveal-delay-${delay}` : ''}`;
+      article.dataset.title = artwork.title;
+      article.dataset.date = artwork.technique || '';
+      article.dataset.full = artwork.imageUrl;
+
+      article.innerHTML = `
+        <img class="gallery-item__img" src="${artwork.imageUrl}" alt="${artwork.title}" />
+        <div class="gallery-item__overlay">
+          <p class="gallery-item__title">${artwork.title}</p>
+          <span class="t-caption">${artwork.technique || ''}</span>
+        </div>
+      `;
+      grid.appendChild(article);
+    });
+  } catch {
+    // En cas d'erreur, on garde la galerie hardcodée
+  }
+}
+
 /* ── Gallery lightbox ────────────────────────────────────── */
 function initLightbox() {
   const lightbox     = $('.lightbox');
@@ -162,8 +196,9 @@ function initActiveNav() {
 }
 
 /* ── Init ────────────────────────────────────────────────── */
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   initNav();
+  await initGallery();
   initReveal();
   initLightbox();
   initHero();
