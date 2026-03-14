@@ -13,27 +13,6 @@ const {
   json,
 } = require("./_helpers");
 
-/* ── Rate-limiting minimal en mémoire (process-level) ───── */
-// Pour une vraie protection, utiliser Vercel KV ou Upstash.
-const attempts = new Map(); // ip → { count, resetAt }
-const MAX_ATTEMPTS = 5;
-const WINDOW_MS = 15 * 60 * 1000; // 15 min
-
-function isRateLimited(ip) {
-  const now = Date.now();
-  const entry = attempts.get(ip);
-
-  if (!entry || now > entry.resetAt) {
-    attempts.set(ip, { count: 1, resetAt: now + WINDOW_MS });
-    return false;
-  }
-
-  entry.count += 1;
-  if (entry.count > MAX_ATTEMPTS) return true;
-
-  return false;
-}
-
 /* ── Body parsing helper ─────────────────────────────────── */
 function parseBody(req) {
   return new Promise((resolve) => {
@@ -59,14 +38,6 @@ function parseBody(req) {
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     return json(res, 405, { error: "Méthode non autorisée" });
-  }
-
-  const ip = req.headers["x-forwarded-for"]?.split(",")[0].trim() || "unknown";
-
-  if (isRateLimited(ip)) {
-    return json(res, 429, {
-      error: "Trop de tentatives. Réessayez dans 15 minutes.",
-    });
   }
 
   const { username, password } = await parseBody(req);
