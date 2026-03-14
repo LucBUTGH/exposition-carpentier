@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Admin — Ombres &amp; Lumières</title>
+    <link rel="stylesheet" href="css/admin.css" />
+  </head>
+  <body>
+    <!--
+    Les deux vues (#view-login / #view-admin) sont masquées par défaut.
+    admin.js appelle /api/check au chargement et affiche la bonne vue.
+  -->
+
+    <!-- ══════════════════════════════════════════════════════
+       VUE — CONNEXION
+       ══════════════════════════════════════════════════════ -->
+    <main id="view-login" class="login-page" hidden>
+      <div class="login-card">
+        <div class="login-logo">
+          <span class="site-name">Ombres &amp; Lumières</span>
+          <span class="admin-badge">Espace Administration</span>
+        </div>
+
+        <p id="login-error" class="login-error" role="alert" hidden></p>
+
+        <form id="login-form" class="login-form" novalidate>
+          <div class="field-group">
+            <label for="username">Identifiant</label>
+            <input
+              id="username"
+              type="text"
+              name="username"
+              placeholder="Identifiant"
+              autocomplete="username"
+              required
+              autofocus
+            />
+          </div>
+          <div class="field-group">
+            <label for="password">Mot de passe</label>
+            <input
+              id="password"
+              type="password"
+              name="password"
+              placeholder="••••••••"
+              autocomplete="current-password"
+              required
+            />
+          </div>
+          <button type="submit" class="btn-login">Accéder au panneau</button>
+        </form>
+
+        <p class="login-back">← <a href="index.html">Retour au site</a></p>
+      </div>
+    </main>
+
+    <!-- ══════════════════════════════════════════════════════
+       VUE — PANNEAU ADMIN
+       ══════════════════════════════════════════════════════ -->
+    <div id="view-admin" class="admin-layout" hidden>
+      <!-- Sidebar ────────────────────────────────────────── -->
+      <aside class="admin-sidebar">
+        <div class="sidebar-logo">
+          <span class="site-name">Ombres &amp; Lumières</span>
+          <span class="admin-badge">Administration</span>
+        </div>
+
+        <nav class="sidebar-nav" aria-label="Navigation admin">
+          <a href="#dashboard" class="active">
+            <svg
+              class="icon"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              aria-hidden="true"
+            >
+              <rect x="1" y="1" width="6" height="6" rx="1" />
+              <rect x="9" y="1" width="6" height="6" rx="1" />
+              <rect x="1" y="9" width="6" height="6" rx="1" />
+              <rect x="9" y="9" width="6" height="6" rx="1" />
+            </svg>
+            Tableau de bord
+          </a>
+          <a href="#mailing">
+            <svg
+              class="icon"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              aria-hidden="true"
+            >
+              <rect x="1" y="3" width="14" height="10" rx="1" />
+              <path d="m1 4 7 5 7-5" />
+            </svg>
+            Envoi de mail
+          </a>
+          <a href="#inscrits">
+            <svg
+              class="icon"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              aria-hidden="true"
+            >
+              <circle cx="6" cy="5" r="3" />
+              <path d="M1 14a5 5 0 0 1 10 0" />
+              <path d="M12 7h4M14 5v4" />
+            </svg>
+            Inscrits
+          </a>
+          <a href="#galerie-admin">
+            <svg
+              class="icon"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              aria-hidden="true"
+            >
+              <rect x="1" y="1" width="14" height="14" rx="1" />
+              <circle cx="5.5" cy="5.5" r="1.5" />
+              <path d="m15 11-4-4-4 4-2-2-4 4" />
+            </svg>
+            Galerie
+          </a>
+          <a href="#evenements-admin">
+            <svg
+              class="icon"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              aria-hidden="true"
+            >
+              <rect x="1" y="2" width="14" height="13" rx="1" />
+              <path d="M5 1v2M11 1v2M1 7h14" />
+            </svg>
+            Événements
+          </a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="admin-user">
+            Connecté en tant que
+            <strong id="admin-username">—</strong>
+          </div>
+          <button id="btn-logout" class="btn-logout" type="button">
+            Déconnexion
+          </button>
+        </div>
+      </aside>
+
+      <!-- Main ────────────────────────────────────────────── -->
+      <main class="admin-main">
+        <!-- Header -->
+        <div class="admin-header">
+          <div>
+            <h1>Tableau de bord</h1>
+            <p class="subtitle">
+              Gestion de l'exposition — Philippe Carpentier, Galerie des
+              Croisiers
+            </p>
+          </div>
+          <div class="header-date">
+            <span class="date-str"></span>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <p class="stat-card__label">Liste de diffusion</p>
+            <p class="stat-card__value" id="stat-recipients">—</p>
+            <p class="stat-card__change" id="stat-recipients-label">
+              Chargement…
+            </p>
+          </div>
+          <div class="stat-card">
+            <p class="stat-card__label">Vernissage</p>
+            <p class="stat-card__value">30 Avr.</p>
+            <p class="stat-card__change">2026 — 18h à 20h</p>
+          </div>
+          <div class="stat-card">
+            <p class="stat-card__label">Jours restants</p>
+            <p class="stat-card__value" id="days-remaining">—</p>
+            <p class="stat-card__change">Avant clôture (13 mai)</p>
+          </div>
+          <div class="stat-card">
+            <p class="stat-card__label">Co-exposant</p>
+            <p class="stat-card__value">Farcy</p>
+            <p class="stat-card__change">Thierry Farcy — Sculptures</p>
+          </div>
+        </div>
+
+        <!-- Panels -->
+        <div class="admin-panels">
+          <!-- Mail Panel -->
+          <div class="panel" id="mailing">
+            <div class="panel-header">
+              <h2>Envoi de mail groupé</h2>
+            </div>
+            <div class="panel-body">
+              <div class="mail-section">
+                <!-- Upload CSV -->
+                <div class="csv-upload-zone" id="csv-upload-zone">
+                  <div class="csv-upload-zone__inner">
+                    <svg
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+                      />
+                      <polyline points="14 2 14 8 20 8" />
+                      <line x1="12" y1="18" x2="12" y2="12" />
+                      <line x1="9" y1="15" x2="15" y2="15" />
+                    </svg>
+                    <p class="csv-upload-zone__label">
+                      Importer la liste de diffusion
+                    </p>
+                    <p class="csv-upload-zone__hint">
+                      Fichier .csv avec colonne « email » —
+                      <span id="csv-current-count">chargement…</span>
+                    </p>
+                  </div>
+                  <input
+                    type="file"
+                    id="csv-file-input"
+                    accept=".csv"
+                    aria-label="Choisir un fichier CSV"
+                  />
+                </div>
+                <div id="csv-status" class="csv-status" hidden></div>
+
+                <!-- Formulaire mail -->
+                <div class="field-group" style="margin-top: 1.5rem">
+                  <label for="mail-subject">Objet</label>
+                  <input
+                    id="mail-subject"
+                    type="text"
+                    name="mail-subject"
+                    placeholder="Objet du message…"
+                  />
+                </div>
+                <div class="field-group">
+                  <label for="mail-body">Message</label>
+                  <textarea
+                    id="mail-body"
+                    name="mail-body"
+                    placeholder="Rédigez votre message ici…"
+                    rows="6"
+                  ></textarea>
+                </div>
+                <div class="mail-actions">
+                  <button class="btn-send-mail" type="button">
+                    Envoyer à tous
+                  </button>
+                  <span class="recipients-count" id="recipients-count-label"
+                    >— destinataires</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick links Panel -->
+          <div class="panel">
+            <div class="panel-header">
+              <h2>Actions rapides</h2>
+            </div>
+            <div class="panel-body">
+              <div class="quick-links">
+                <div
+                  class="quick-link-item"
+                  data-action="site"
+                  role="button"
+                  tabindex="0"
+                >
+                  <span>Voir le site public</span>
+                  <span class="arrow">↗</span>
+                </div>
+                <div
+                  class="quick-link-item"
+                  data-action="galerie"
+                  role="button"
+                  tabindex="0"
+                >
+                  <span>Gérer la galerie</span>
+                  <span class="arrow">→</span>
+                </div>
+                <div
+                  class="quick-link-item"
+                  data-action="inscrits"
+                  role="button"
+                  tabindex="0"
+                >
+                  <span>Exporter les inscrits</span>
+                  <span class="arrow">→</span>
+                </div>
+                <div
+                  class="quick-link-item"
+                  data-action="evenements"
+                  role="button"
+                  tabindex="0"
+                >
+                  <span>Modifier les événements</span>
+                  <span class="arrow">→</span>
+                </div>
+                <div
+                  class="quick-link-item"
+                  data-action="stats"
+                  role="button"
+                  tabindex="0"
+                >
+                  <span>Statistiques de visite</span>
+                  <span class="arrow">→</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /admin-panels -->
+
+        <!-- Inscrits Panel -->
+        <div class="panel panel--full" id="inscrits" style="margin-top: 1.5rem">
+          <div class="panel-header">
+            <h2>Liste des inscrits</h2>
+            <div class="panel-header-actions">
+              <span class="inscrits-count" id="inscrits-count">0 adresse</span>
+              <input
+                class="inscrits-search"
+                id="inscrits-search"
+                type="search"
+                placeholder="Rechercher…"
+                aria-label="Rechercher un inscrit"
+              />
+            </div>
+          </div>
+          <div class="panel-body panel-body--no-pad">
+            <div id="inscrits-empty" class="inscrits-empty">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.2"
+                aria-hidden="true"
+              >
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+              <p>Aucune liste importée</p>
+              <span
+                >Importez un fichier .csv ci-dessus pour afficher les
+                inscrits</span
+              >
+            </div>
+            <table class="inscrits-table" id="inscrits-table" hidden>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Adresse e-mail</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="inscrits-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+    <!-- /view-admin -->
+
+    <!-- Toast notification -->
+    <div class="toast" role="status" aria-live="polite"></div>
+
+    <script>
+      // Calcul JS du nombre de jours restants (était côté PHP avant)
+      const closeDate = new Date("2026-05-13");
+      const now = new Date();
+      const diff = Math.max(0, Math.ceil((closeDate - now) / 86400000));
+      const el = document.getElementById("days-remaining");
+      if (el) el.textContent = diff;
+    </script>
+    <script src="js/admin.js"></script>
+  </body>
+</html>

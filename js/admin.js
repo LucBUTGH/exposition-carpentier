@@ -1,0 +1,411 @@
+/**
+ * js/admin.js
+ * Panneau d'administration — auth JWT + upload CSV + envoi mail
+ */
+
+const $ = (sel, ctx = document) => ctx.querySelector(sel);
+const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
+
+/* ── Toast ── */
+function showToast(message, duration = 3500) {
+  const toast = $(".toast");
+  if (!toast) return;
+  toast.textContent = message;
+  toast.classList.add("show");
+  setTimeout(() => toast.classList.remove("show"), duration);
+}
+
+/* ── UI state ── */
+const UI = {
+  loginView: null,
+  adminView: null,
+  loginForm: null,
+  loginError: null,
+  adminUserSpan: null,
+
+  init() {
+    this.loginView = $("#view-login");
+    this.adminView = $("#view-admin");
+    this.loginForm = $("#login-form");
+    this.loginError = $("#login-error");
+    this.adminUserSpan = $("#admin-username");
+  },
+
+  showLogin() {
+    this.loginView?.removeAttribute("hidden");
+    this.adminView?.setAttribute("hidden", "");
+    $('input[name="username"]')?.focus();
+  },
+
+  showAdmin(username) {
+    this.loginView?.setAttribute("hidden", "");
+    this.adminView?.removeAttribute("hidden");
+    if (this.adminUserSpan) this.adminUserSpan.textContent = username;
+    initDate();
+    updateMailingUI();
+  },
+
+  setLoginError(msg) {
+    if (!this.loginError) return;
+    this.loginError.textContent = msg;
+    this.loginError.removeAttribute("hidden");
+  },
+
+  clearLoginError() {
+    if (!this.loginError) return;
+    this.loginError.textContent = "";
+    this.loginError.setAttribute("hidden", "");
+  },
+};
+
+/* ── API helpers ── */
+async function apiPost(endpoint, body) {
+  const res = await fetch(endpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+    credentials: "same-origin",
+  });
+  const data = await res.json().catch(() => ({}));
+  return { ok: res.ok, status: res.status, data };
+}
+
+async function apiGet(endpoint) {
+  const res = await fetch(endpoint, {
+    method: "GET",
+    credentials: "same-origin",
+  });
+  const data = await res.json().catch(() => ({}));
+  return { ok: res.ok, status: res.status, data };
+}
+
+/* ── Auth ── */
+async function checkSession() {
+  const { ok, data } = await apiGet("/api/check");
+  if (ok && data.ok) UI.showAdmin(data.user);
+  else UI.showLogin();
+}
+
+async function handleLogin(e) {
+  e.preventDefault();
+  UI.clearLoginError();
+  const form = e.currentTarget;
+  const btn = form.querySelector(".btn-login");
+  const username = form.querySelector('[name="username"]')?.value.trim();
+  const password = form.querySelector('[name="password"]')?.value;
+
+  if (!username || !password) {
+    UI.setLoginError("Veuillez remplir tous les champs.");
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "Connexion…";
+
+  const { ok, status, data } = await apiPost("/api/login", {
+    username,
+    password,
+  });
+
+  btn.disabled = false;
+  btn.textContent = "Accéder au panneau";
+
+  if (ok) {
+    UI.showAdmin(data.user);
+  } else if (status === 429) {
+    UI.setLoginError(data.error || "Trop de tentatives. Réessayez plus tard.");
+  } else {
+    UI.setLoginError(data.error || "Identifiants incorrects.");
+    form.querySelector('[name="password"]').value = "";
+    form.querySelector('[name="password"]').focus();
+  }
+}
+
+async function handleLogout() {
+  await apiPost("/api/logout", {});
+  UI.showLogin();
+  showToast("Déconnecté avec succès.");
+}
+
+/* ── Mailing list (stockée en mémoire côté client) ── */
+let mailingList = [];
+
+function updateMailingUI() {
+  const n = mailingList.length;
+  const s = n > 1 ? "s" : "";
+  const statValue = $("#stat-recipients");
+  const statLabel = $("#stat-recipients-label");
+  const countLabel = $("#recipients-count-label");
+  const hintEl = $("#csv-current-count");
+
+  if (n > 0) {
+    if (statValue) statValue.textContent = n;
+    if (statLabel) statLabel.textContent = "Dans la liste";
+    if (countLabel) countLabel.textContent = `${n} destinataire${s}`;
+    if (hintEl) hintEl.textContent = `Liste actuelle : ${n} adresse${s}`;
+  } else {
+    if (statValue) statValue.textContent = "0";
+    if (statLabel) statLabel.textContent = "Aucune liste importée";
+    if (countLabel) countLabel.textContent = "— destinataires";
+    if (hintEl) hintEl.textContent = "Aucune liste importée";
+  }
+}
+
+/* ── CSV Upload — parsing côté client, aucune API ── */
+function initCsvUpload() {
+  const zone = $("#csv-upload-zone");
+  const fileInput = $("#csv-file-input");
+  const statusEl = $("#csv-status");
+
+  if (!zone || !fileInput) return;
+
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  zone.addEventListener("click", () => fileInput.click());
+  zone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    zone.classList.add("drag-over");
+  });
+  zone.addEventListener("dragleave", () => zone.classList.remove("drag-over"));
+  zone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    zone.classList.remove("drag-over");
+    const file = e.dataTransfer.files[0];
+    if (file) parseCsv(file);
+  });
+  fileInput.addEventListener("change", () => {
+    if (fileInput.files[0]) parseCsv(fileInput.files[0]);
+    fileInput.value = "";
+  });
+
+  function parseCsv(file) {
+    if (!file.name.endsWith(".csv")) {
+      showCsvStatus("error", "Seuls les fichiers .csv sont acceptés.");
+      return;
+    }
+
+    showCsvStatus("loading", "Lecture en cours…");
+    zone.classList.add("uploading");
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const text = e.target.result;
+        const lines = text
+          .split(/\r?\n/)
+          .map((l) => l.trim())
+          .filter(Boolean);
+
+        if (lines.length < 2) {
+          showCsvStatus("error", "Fichier vide ou sans données.");
+          return;
+        }
+
+        const sep = lines[0].includes(";") ? ";" : ",";
+        const headers = lines[0]
+          .split(sep)
+          .map((h) => h.trim().toLowerCase().replace(/['"]/g, ""));
+        const emailIdx = headers.findIndex(
+          (h) => h === "email" || h === "e-mail" || h === "mail",
+        );
+
+        if (emailIdx === -1) {
+          showCsvStatus(
+            "error",
+            "Colonne « email » introuvable dans le fichier.",
+          );
+          return;
+        }
+
+        const emails = [];
+        for (let i = 1; i < lines.length; i++) {
+          const cols = lines[i].split(sep);
+          const email = (cols[emailIdx] || "")
+            .trim()
+            .replace(/['"]/g, "")
+            .toLowerCase();
+          if (EMAIL_RE.test(email)) emails.push(email);
+        }
+
+        mailingList = [...new Set(emails)];
+
+        const skipped = lines.length - 1 - mailingList.length;
+        const msg =
+          skipped > 0
+            ? `${mailingList.length} adresse(s) importée(s) — ${skipped} ignorée(s).`
+            : `${mailingList.length} adresse(s) importée(s) avec succès.`;
+
+        showCsvStatus("success", msg);
+        updateMailingUI();
+        renderInscrits();
+      } catch {
+        showCsvStatus("error", "Erreur lors de la lecture du fichier.");
+      } finally {
+        zone.classList.remove("uploading");
+      }
+    };
+
+    reader.onerror = () => {
+      showCsvStatus("error", "Impossible de lire le fichier.");
+      zone.classList.remove("uploading");
+    };
+
+    reader.readAsText(file, "UTF-8");
+  }
+
+  function showCsvStatus(type, message) {
+    if (!statusEl) return;
+    statusEl.textContent = message;
+    statusEl.className = `csv-status csv-status--${type}`;
+    statusEl.removeAttribute("hidden");
+    if (type !== "loading")
+      setTimeout(() => statusEl.setAttribute("hidden", ""), 5000);
+  }
+}
+
+/* ── Inscrits table ── */
+function renderInscrits(filter = "") {
+  const empty = $("#inscrits-empty");
+  const table = $("#inscrits-table");
+  const tbody = $("#inscrits-tbody");
+  const counter = $("#inscrits-count");
+
+  if (!tbody) return;
+
+  const term = filter.trim().toLowerCase();
+  const visible = term
+    ? mailingList.filter((e) => e.includes(term))
+    : mailingList;
+
+  // Update counter
+  if (counter) {
+    const n = mailingList.length;
+    counter.textContent =
+      n === 0
+        ? "0 adresse"
+        : term
+          ? `${visible.length} / ${n}`
+          : `${n} adresse${n > 1 ? "s" : ""}`;
+  }
+
+  if (mailingList.length === 0) {
+    empty?.removeAttribute("hidden");
+    table?.setAttribute("hidden", "");
+    return;
+  }
+
+  empty?.setAttribute("hidden", "");
+  table?.removeAttribute("hidden");
+
+  tbody.innerHTML = visible
+    .map((email, i) => {
+      const display = term
+        ? email.replace(
+            new RegExp(`(${escapeRe(term)})`, "gi"),
+            "<mark>$1</mark>",
+          )
+        : email;
+      const realIdx = mailingList.indexOf(email) + 1;
+      return `
+      <tr>
+        <td>${realIdx}</td>
+        <td>${display}</td>
+        <td>
+          <button class="btn-remove-email" data-email="${email}" title="Supprimer" aria-label="Supprimer ${email}">✕</button>
+        </td>
+      </tr>`;
+    })
+    .join("");
+
+  // Remove handlers
+  tbody.querySelectorAll(".btn-remove-email").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const email = btn.dataset.email;
+      mailingList = mailingList.filter((e) => e !== email);
+      updateMailingUI();
+      renderInscrits($("#inscrits-search")?.value || "");
+    });
+  });
+}
+
+function escapeRe(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function initInscrits() {
+  const search = $("#inscrits-search");
+  if (!search) return;
+  search.addEventListener("input", () => renderInscrits(search.value));
+}
+
+/* ── Send mail ── */
+function initMailForm() {
+  const sendBtn = $(".btn-send-mail");
+  if (!sendBtn) return;
+
+  sendBtn.addEventListener("click", async () => {
+    const subject = $("#mail-subject")?.value.trim();
+    const body = $("#mail-body")?.value.trim();
+
+    if (!subject || !body) {
+      showToast("Veuillez remplir l'objet et le contenu.");
+      return;
+    }
+
+    const original = sendBtn.textContent;
+    sendBtn.disabled = true;
+    sendBtn.textContent = "Envoi…";
+
+    const { ok, data } = await apiPost("/api/send-mail", { subject, body });
+
+    sendBtn.textContent = original;
+    sendBtn.disabled = false;
+
+    if (ok) {
+      showToast(data.message || "Message envoyé.");
+      $("#mail-subject").value = "";
+      $("#mail-body").value = "";
+    } else {
+      showToast(data.error || "Erreur lors de l'envoi.");
+    }
+  });
+}
+
+/* ── Quick links ── */
+function initQuickLinks() {
+  $$(".quick-link-item").forEach((link) => {
+    const handler = () => {
+      const action = link.dataset.action;
+      if (action === "site") window.open("/index.html", "_blank");
+      else showToast(`Action « ${action} » — à implémenter.`);
+    };
+    link.addEventListener("click", handler);
+    link.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") handler();
+    });
+  });
+}
+
+/* ── Date ── */
+function initDate() {
+  const el = $(".header-date .date-str");
+  if (!el) return;
+  el.textContent = new Date().toLocaleDateString("fr-FR", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
+
+/* ── Init ── */
+document.addEventListener("DOMContentLoaded", async () => {
+  UI.init();
+  UI.loginForm?.addEventListener("submit", handleLogin);
+  $("#btn-logout")?.addEventListener("click", handleLogout);
+  initMailForm();
+  initCsvUpload();
+  initInscrits();
+  initQuickLinks();
+  await checkSession();
+});
