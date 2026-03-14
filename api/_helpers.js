@@ -6,9 +6,10 @@
 
 const jwt    = require('jsonwebtoken');
 const cookie = require('cookie');
+const bcrypt = require('bcryptjs');
 
 /* ── Constants ───────────────────────────────────────────── */
-const COOKIE_NAME    = 'expo_session';
+const COOKIE_NAME    = '__Host-expo_session';
 const COOKIE_MAX_AGE = 60 * 60 * 8; // 8 heures
 
 /* ── JWT ─────────────────────────────────────────────────── */
@@ -46,7 +47,7 @@ function verifyToken(token) {
 function buildSessionCookie(token) {
   return cookie.serialize(COOKIE_NAME, token, {
     httpOnly: true,
-    secure:   process.env.NODE_ENV !== 'development',
+    secure:   true,
     sameSite: 'strict',
     maxAge:   COOKIE_MAX_AGE,
     path:     '/',
@@ -60,7 +61,7 @@ function buildSessionCookie(token) {
 function buildExpiredCookie() {
   return cookie.serialize(COOKIE_NAME, '', {
     httpOnly: true,
-    secure:   process.env.NODE_ENV !== 'development',
+    secure:   true,
     sameSite: 'strict',
     maxAge:   0,
     path:     '/',
@@ -82,16 +83,31 @@ function extractToken(req) {
 /* ── Credentials ─────────────────────────────────────────── */
 
 /**
- * Vérifie les identifiants fournis contre les variables d'environnement.
- * En production : stocker ADMIN_PASSWORD_HASH (bcrypt) plutôt qu'en clair.
+ * Vérifie les identifiants fournis.
+ * Si ADMIN_PASSWORD_HASH est défini (bcrypt), on l'utilise.
+ * Sinon, on compare en clair (dev uniquement).
  * @param {string} username
  * @param {string} password
- * @returns {boolean}
+ * @returns {Promise<boolean>}
  */
-function checkCredentials(username, password) {
-  const expectedUser = process.env.ADMIN_USER     || 'admin';
+async function checkCredentials(username, password) {
+  const expectedUser = process.env.ADMIN_USER || 'admin';
+  if (username !== expectedUser) {
+    // Exécuter bcrypt.compare quand même pour éviter le timing attack
+    await bcrypt.compare(password, '$2a$10$dummyhashtopreventtimingleak000');
+    return false;
+  }
+
+  const hash = process.env.ADMIN_PASSWORD_HASH;
+  if (hash) {
+    return bcrypt.compare(password, hash);
+  }
+
+  // Fallback clair pour dev — à remplacer en production
   const expectedPass = process.env.ADMIN_PASSWORD || 'admin';
-  return username === expectedUser && password === expectedPass;
+  // Comparaison constant-time via bcrypt hash à la volée
+  const tempHash = await bcrypt.hash(expectedPass, 1);
+  return bcrypt.compare(password, tempHash);
 }
 
 /* ── CORS / JSON helpers ─────────────────────────────────── */

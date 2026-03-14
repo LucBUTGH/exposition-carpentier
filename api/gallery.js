@@ -13,6 +13,42 @@ const crypto = require('crypto');
 
 const META_KEY = 'gallery/artworks.json';
 
+/* ── Validation image (magic numbers) ──────────────────────── */
+const ALLOWED_TYPES = {
+  'image/jpeg': { ext: 'jpg',  magic: [0xFF, 0xD8, 0xFF] },
+  'image/png':  { ext: 'png',  magic: [0x89, 0x50, 0x4E, 0x47] },
+  'image/webp': { ext: 'webp', magic: null }, // RIFF....WEBP
+  'image/gif':  { ext: 'gif',  magic: [0x47, 0x49, 0x46] },
+};
+const MAX_IMAGE_SIZE = 4 * 1024 * 1024; // 4 Mo
+
+function validateImage(buffer, declaredType) {
+  if (!buffer || !buffer.length) return { valid: false, error: 'Image invalide' };
+  if (buffer.length > MAX_IMAGE_SIZE) return { valid: false, error: 'Image trop volumineuse (max 4 Mo)' };
+
+  // Détecter le vrai type par les magic bytes
+  let detectedType = null;
+  for (const [mime, info] of Object.entries(ALLOWED_TYPES)) {
+    if (mime === 'image/webp') {
+      // RIFF header + WEBP at offset 8
+      if (buffer.length >= 12 &&
+          buffer[0] === 0x52 && buffer[1] === 0x49 && buffer[2] === 0x46 && buffer[3] === 0x46 &&
+          buffer[8] === 0x57 && buffer[9] === 0x45 && buffer[10] === 0x42 && buffer[11] === 0x50) {
+        detectedType = mime;
+        break;
+      }
+    } else if (info.magic && info.magic.every((b, i) => buffer[i] === b)) {
+      detectedType = mime;
+      break;
+    }
+  }
+
+  if (!detectedType) return { valid: false, error: 'Format non supporté (JPEG, PNG, WebP, GIF uniquement)' };
+
+  const info = ALLOWED_TYPES[detectedType];
+  return { valid: true, contentType: detectedType, ext: info.ext };
+}
+
 /* ── Cache mémoire (persiste dans l'instance warm) ── */
 let _cache = null;  // null = pas encore chargé, [] = vide
 
@@ -70,10 +106,10 @@ module.exports = async function handler(req, res) {
     if (!image) return json(res, 400, { error: 'Image requise' });
 
     const buffer = Buffer.from(image, 'base64');
-    if (!buffer.length) return json(res, 400, { error: 'Image invalide' });
+    const validation = validateImage(buffer, imageType);
+    if (!validation.valid) return json(res, 400, { error: validation.error });
 
-    const contentType = imageType || 'image/jpeg';
-    const ext = contentType.split('/')[1]?.split('+')[0] || 'jpg';
+    const { contentType, ext } = validation;
     const id = crypto.randomBytes(4).toString('hex');
     const blobPath = `gallery/${id}.${ext}`;
 
@@ -86,7 +122,7 @@ module.exports = async function handler(req, res) {
       });
     } catch (err) {
       console.error('Blob upload error:', err);
-      return json(res, 500, { error: 'Erreur upload image: ' + err.message });
+      return json(res, 500, { error: 'Erreur lors de l\'upload de l\'image' });
     }
 
     const artwork = {
@@ -103,7 +139,7 @@ module.exports = async function handler(req, res) {
       await saveArtworks(artworks);
     } catch (err) {
       console.error('Metadata save error:', err);
-      return json(res, 500, { error: 'Erreur sauvegarde: ' + err.message });
+      return json(res, 500, { error: 'Erreur lors de la sauvegarde' });
     }
 
     return json(res, 201, { ok: true, artwork });

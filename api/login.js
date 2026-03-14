@@ -16,7 +16,7 @@ const {
 /* ── Rate-limiting minimal en mémoire (process-level) ───── */
 // Pour une vraie protection, utiliser Vercel KV ou Upstash.
 const attempts = new Map(); // ip → { count, resetAt }
-const MAX_ATTEMPTS = 10;
+const MAX_ATTEMPTS = 5;
 const WINDOW_MS = 15 * 60 * 1000; // 15 min
 
 function isRateLimited(ip) {
@@ -75,7 +75,12 @@ module.exports = async function handler(req, res) {
     return json(res, 400, { error: "Identifiant et mot de passe requis" });
   }
 
-  if (!checkCredentials(username, password)) {
+  // Limiter la longueur des entrées pour éviter les abus
+  if (username.length > 100 || password.length > 200) {
+    return json(res, 400, { error: "Identifiants invalides" });
+  }
+
+  if (!(await checkCredentials(username, password))) {
     // Délai constant pour éviter le timing attack
     await new Promise((r) => setTimeout(r, 300 + Math.random() * 200));
     return json(res, 401, { error: "Identifiants incorrects" });

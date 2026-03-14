@@ -60,13 +60,26 @@ async function initGallery() {
       article.dataset.date = artwork.technique || '';
       article.dataset.full = artwork.imageUrl;
 
-      article.innerHTML = `
-        <img class="gallery-item__img" src="${artwork.imageUrl}" alt="${artwork.title}" />
-        <div class="gallery-item__overlay">
-          <p class="gallery-item__title">${artwork.title}</p>
-          <span class="t-caption">${artwork.technique || ''}</span>
-        </div>
-      `;
+      const img = document.createElement('img');
+      img.className = 'gallery-item__img';
+      img.src = artwork.imageUrl;
+      img.alt = artwork.title;
+
+      const titleEl = document.createElement('p');
+      titleEl.className = 'gallery-item__title';
+      titleEl.textContent = artwork.title;
+
+      const techEl = document.createElement('span');
+      techEl.className = 't-caption';
+      techEl.textContent = artwork.technique || '';
+
+      const overlay = document.createElement('div');
+      overlay.className = 'gallery-item__overlay';
+      overlay.appendChild(titleEl);
+      overlay.appendChild(techEl);
+
+      article.appendChild(img);
+      article.appendChild(overlay);
       grid.appendChild(article);
     });
   } catch {

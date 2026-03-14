@@ -298,34 +298,51 @@ function renderInscrits(filter = "") {
   empty?.setAttribute("hidden", "");
   table?.removeAttribute("hidden");
 
-  tbody.innerHTML = visible
-    .map((email, i) => {
-      const display = term
-        ? email.replace(
-            new RegExp(`(${escapeRe(term)})`, "gi"),
-            "<mark>$1</mark>",
-          )
-        : email;
-      const realIdx = mailingList.indexOf(email) + 1;
-      return `
-      <tr>
-        <td>${realIdx}</td>
-        <td>${display}</td>
-        <td>
-          <button class="btn-remove-email" data-email="${email}" title="Supprimer" aria-label="Supprimer ${email}">✕</button>
-        </td>
-      </tr>`;
-    })
-    .join("");
+  tbody.innerHTML = "";
+  visible.forEach((email) => {
+    const realIdx = mailingList.indexOf(email) + 1;
+    const tr = document.createElement("tr");
 
-  // Remove handlers
-  tbody.querySelectorAll(".btn-remove-email").forEach((btn) => {
+    const tdIdx = document.createElement("td");
+    tdIdx.textContent = realIdx;
+
+    const tdEmail = document.createElement("td");
+    if (term) {
+      // Highlight sécurisé sans innerHTML
+      const re = new RegExp(`(${escapeRe(term)})`, "gi");
+      let last = 0;
+      let match;
+      while ((match = re.exec(email)) !== null) {
+        if (match.index > last)
+          tdEmail.appendChild(document.createTextNode(email.slice(last, match.index)));
+        const mark = document.createElement("mark");
+        mark.textContent = match[1];
+        tdEmail.appendChild(mark);
+        last = re.lastIndex;
+      }
+      if (last < email.length)
+        tdEmail.appendChild(document.createTextNode(email.slice(last)));
+    } else {
+      tdEmail.textContent = email;
+    }
+
+    const tdAction = document.createElement("td");
+    const btn = document.createElement("button");
+    btn.className = "btn-remove-email";
+    btn.title = "Supprimer";
+    btn.setAttribute("aria-label", `Supprimer ${email}`);
+    btn.textContent = "\u2715";
     btn.addEventListener("click", () => {
-      const email = btn.dataset.email;
       mailingList = mailingList.filter((e) => e !== email);
       updateMailingUI();
       renderInscrits($("#inscrits-search")?.value || "");
     });
+    tdAction.appendChild(btn);
+
+    tr.appendChild(tdIdx);
+    tr.appendChild(tdEmail);
+    tr.appendChild(tdAction);
+    tbody.appendChild(tr);
   });
 }
 
@@ -431,22 +448,42 @@ function renderGalerie() {
   empty?.setAttribute("hidden", "");
   grid?.removeAttribute("hidden");
 
-  grid.innerHTML = galerieArtworks
-    .map(
-      (a) => `
-    <div class="galerie-admin-card" data-id="${a.id}">
-      <img src="${a.imageUrl}" alt="${a.title}" class="galerie-admin-card__img" />
-      <div class="galerie-admin-card__info">
-        <p class="galerie-admin-card__title">${a.title}</p>
-        <span class="galerie-admin-card__technique">${a.technique || ""}</span>
-      </div>
-      <button class="btn-remove-artwork" data-id="${a.id}" title="Supprimer" aria-label="Supprimer ${a.title}">✕</button>
-    </div>`,
-    )
-    .join("");
+  grid.innerHTML = "";
+  galerieArtworks.forEach((a) => {
+    const card = document.createElement("div");
+    card.className = "galerie-admin-card";
+    card.dataset.id = a.id;
 
-  grid.querySelectorAll(".btn-remove-artwork").forEach((btn) => {
-    btn.addEventListener("click", () => deleteArtwork(btn.dataset.id));
+    const img = document.createElement("img");
+    img.src = a.imageUrl;
+    img.alt = a.title;
+    img.className = "galerie-admin-card__img";
+
+    const info = document.createElement("div");
+    info.className = "galerie-admin-card__info";
+
+    const titleEl = document.createElement("p");
+    titleEl.className = "galerie-admin-card__title";
+    titleEl.textContent = a.title;
+
+    const techEl = document.createElement("span");
+    techEl.className = "galerie-admin-card__technique";
+    techEl.textContent = a.technique || "";
+
+    info.appendChild(titleEl);
+    info.appendChild(techEl);
+
+    const btn = document.createElement("button");
+    btn.className = "btn-remove-artwork";
+    btn.title = "Supprimer";
+    btn.setAttribute("aria-label", `Supprimer ${a.title}`);
+    btn.textContent = "\u2715";
+    btn.addEventListener("click", () => deleteArtwork(a.id));
+
+    card.appendChild(img);
+    card.appendChild(info);
+    card.appendChild(btn);
+    grid.appendChild(card);
   });
 }
 
