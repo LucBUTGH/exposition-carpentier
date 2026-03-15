@@ -314,7 +314,9 @@ function renderInscrits(filter = "") {
       let match;
       while ((match = re.exec(email)) !== null) {
         if (match.index > last)
-          tdEmail.appendChild(document.createTextNode(email.slice(last, match.index)));
+          tdEmail.appendChild(
+            document.createTextNode(email.slice(last, match.index)),
+          );
         const mark = document.createElement("mark");
         mark.textContent = match[1];
         tdEmail.appendChild(mark);
@@ -394,7 +396,7 @@ function initQuickLinks() {
   $$(".quick-link-item").forEach((link) => {
     const handler = () => {
       const action = link.dataset.action;
-      if (action === "site") window.open("/index.html", "_blank");
+      if (action === "site") window.open("/", "_blank");
       else if (action === "galerie") location.hash = "#galerie-admin";
       else showToast(`Action « ${action} » — à implémenter.`);
     };
