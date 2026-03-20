@@ -493,14 +493,6 @@
     <!-- Toast notification -->
     <div class="toast" role="status" aria-live="polite"></div>
 
-    <script>
-      // Calcul JS du nombre de jours restants (était côté PHP avant)
-      const closeDate = new Date("2026-05-13");
-      const now = new Date();
-      const diff = Math.max(0, Math.ceil((closeDate - now) / 86400000));
-      const el = document.getElementById("days-remaining");
-      if (el) el.textContent = diff;
-    </script>
     <script src="js/admin.js"></script>
   </body>
 </html>

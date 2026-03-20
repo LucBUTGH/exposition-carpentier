@@ -61,13 +61,16 @@ module.exports = async function handler(req, res) {
 
     try {
       const result = await resend.batch.send(messages);
+      console.log('Resend batch result:', JSON.stringify(result));
 
       if (result.error) {
+        console.error('Resend error:', result.error);
         errors.push(result.error.message || 'Erreur batch Resend');
       } else {
         sent += batch.length;
       }
     } catch (err) {
+      console.error('Resend exception:', err);
       errors.push(err.message || 'Erreur réseau Resend');
     }
   }

@@ -444,8 +444,15 @@ function initQuickLinks() {
   });
 }
 
-/* ── Date ── */
+/* ── Date + countdown ── */
 function initDate() {
+  // Jours restants avant clôture
+  const closeDate = new Date("2026-05-13");
+  const now = new Date();
+  const diff = Math.max(0, Math.ceil((closeDate - now) / 86400000));
+  const daysEl = $("#days-remaining");
+  if (daysEl) daysEl.textContent = diff;
+
   const el = $(".header-date .date-str");
   if (!el) return;
   el.textContent = new Date().toLocaleDateString("fr-FR", {
