@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Oeuvres de Philippe Carpentier — aquarelles, encres, détrempes sur grands formats."
+    />
+    <title>Oeuvres — Philippe Carpentier</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <nav class="nav" role="navigation" aria-label="Navigation principale">
+      <a class="nav__logo" href="/">Philippe <span>Carpentier</span></a>
+      <ul class="nav__links">
+        <li><a href="/exposition">L'exposition</a></li>
+        <li><a class="active" href="/galerie">Oeuvres</a></li>
+        <li><a href="/artiste">L'artiste</a></li>
+      </ul>
+    </nav>
+
+    <main class="page">
+      <div class="page__inner">
+        <span class="section-label reveal">Parcours</span>
+        <h1 class="section-title reveal">Oeuvres</h1>
+        <div class="section-divider"></div>
+
+        <div class="gallery-grid">
+          <article
+            class="gallery-item reveal"
+            data-title="Estran I"
+            data-date="Aquarelle sur grand format"
+            data-full="assets/image1.jpg"
+          >
+            <img
+              class="gallery-item__img"
+              src="assets/image1.jpg"
+              alt="Estran I"
+            />
+            <div class="gallery-item__overlay">
+              <p class="gallery-item__title">Estran I</p>
+              <span class="gallery-item__technique"
+                >Aquarelle sur grand format</span
+              >
+            </div>
+          </article>
+          <article
+            class="gallery-item reveal reveal-delay-1"
+            data-title="Espace maritime II"
+            data-date="Encre et gomme arabique"
+            data-full="assets/image2.jpg"
+          >
+            <img
+              class="gallery-item__img"
+              src="assets/image2.jpg"
+              alt="Espace maritime II"
+            />
+            <div class="gallery-item__overlay">
+              <p class="gallery-item__title">Espace maritime II</p>
+              <span class="gallery-item__technique"
+                >Encre et gomme arabique</span
+              >
+            </div>
+          </article>
+          <article
+            class="gallery-item reveal reveal-delay-2"
+            data-title="Normandie, marée basse"
+            data-date="Détrempe sur grand format"
+            data-full="assets/image3.jpg"
+          >
+            <img
+              class="gallery-item__img"
+              src="assets/image3.jpg"
+              alt="Normandie, marée basse"
+            />
+            <div class="gallery-item__overlay">
+              <p class="gallery-item__title">Normandie, marée basse</p>
+              <span class="gallery-item__technique"
+                >Détrempe sur grand format</span
+              >
+            </div>
+          </article>
+          <article
+            class="gallery-item reveal"
+            data-title="Horizon V"
+            data-date="Aquarelle"
+          >
+            <div class="gallery-placeholder"><span>Oeuvre 04</span></div>
+            <div class="gallery-item__overlay">
+              <p class="gallery-item__title">Horizon V</p>
+              <span class="gallery-item__technique">Aquarelle</span>
+            </div>
+          </article>
+          <article
+            class="gallery-item reveal reveal-delay-1"
+            data-title="Turbulences"
+            data-date="Encre et colle de peau"
+          >
+            <div class="gallery-placeholder"><span>Oeuvre 05</span></div>
+            <div class="gallery-item__overlay">
+              <p class="gallery-item__title">Turbulences</p>
+              <span class="gallery-item__technique"
+                >Encre et colle de peau</span
+              >
+            </div>
+          </article>
+          <article
+            class="gallery-item reveal reveal-delay-2"
+            data-title="Arromanches"
+            data-date="Aquarelle sur grand format"
+          >
+            <div class="gallery-placeholder"><span>Oeuvre 06</span></div>
+            <div class="gallery-item__overlay">
+              <p class="gallery-item__title">Arromanches</p>
+              <span class="gallery-item__technique"
+                >Aquarelle sur grand format</span
+              >
+            </div>
+          </article>
+          <article
+            class="gallery-item reveal"
+            data-title="Apesanteur"
+            data-date="Gomme arabique et détrempe"
+          >
+            <div class="gallery-placeholder"><span>Oeuvre 07</span></div>
+            <div class="gallery-item__overlay">
+              <p class="gallery-item__title">Apesanteur</p>
+              <span class="gallery-item__technique"
+                >Gomme arabique et détrempe</span
+              >
+            </div>
+          </article>
+          <article
+            class="gallery-item reveal reveal-delay-1"
+            data-title="Territoire limite"
+            data-date="Encre sur grand format"
+          >
+            <div class="gallery-placeholder"><span>Oeuvre 08</span></div>
+            <div class="gallery-item__overlay">
+              <p class="gallery-item__title">Territoire limite</p>
+              <span class="gallery-item__technique"
+                >Encre sur grand format</span
+              >
+            </div>
+          </article>
+        </div>
+      </div>
+    </main>
+
+    <!-- Lightbox -->
+    <div
+      class="lightbox"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Visualisation de l'oeuvre"
+    >
+      <div class="lightbox__inner">
+        <img class="lightbox__img" src="" alt="Oeuvre en plein écran" />
+        <div class="lightbox__caption">
+          <p class="lightbox__title"></p>
+          <span class="lightbox__date"></span>
+        </div>
+      </div>
+      <button class="lightbox__close" aria-label="Fermer">Fermer</button>
+    </div>
+
+    <footer class="footer">
+      <p class="footer__copy">
+        &copy; 2026 Galerie des Croisiers, Caen. Tous droits réservés.
+      </p>
+      <nav class="footer__nav" aria-label="Navigation pied de page">
+        <a href="/admin">Admin</a>
+      </nav>
+    </footer>
+
+    <script src="js/main.js"></script>
+  </body>
+</html>

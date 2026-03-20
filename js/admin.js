@@ -42,7 +42,7 @@ const UI = {
     this.adminView?.removeAttribute("hidden");
     if (this.adminUserSpan) this.adminUserSpan.textContent = username;
     initDate();
-    updateMailingUI();
+    loadSubscribers();
     loadGalerie();
   },
 
@@ -128,8 +128,17 @@ async function handleLogout() {
   showToast("Déconnecté avec succès.");
 }
 
-/* ── Mailing list (stockée en mémoire côté client) ── */
+/* ── Mailing list ── */
 let mailingList = [];
+
+async function loadSubscribers() {
+  const { ok, data } = await apiGet("/api/subscribers");
+  if (ok && Array.isArray(data.subscribers)) {
+    mailingList = data.subscribers;
+  }
+  updateMailingUI();
+  renderInscrits();
+}
 
 function updateMailingUI() {
   const n = mailingList.length;
@@ -179,7 +188,7 @@ function initCsvUpload() {
     fileInput.value = "";
   });
 
-  function parseCsv(file) {
+  async function parseCsv(file) {
     if (!file.name.endsWith(".csv")) {
       showCsvStatus("error", "Seuls les fichiers .csv sont acceptés.");
       return;
@@ -189,7 +198,7 @@ function initCsvUpload() {
     zone.classList.add("uploading");
 
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       try {
         const text = e.target.result;
         const lines = text
@@ -228,15 +237,30 @@ function initCsvUpload() {
           if (EMAIL_RE.test(email)) emails.push(email);
         }
 
-        mailingList = [...new Set(emails)];
+        const unique = [...new Set(emails)];
 
-        const skipped = lines.length - 1 - mailingList.length;
-        const msg =
-          skipped > 0
-            ? `${mailingList.length} adresse(s) importée(s) — ${skipped} ignorée(s).`
-            : `${mailingList.length} adresse(s) importée(s) avec succès.`;
+        const skipped = lines.length - 1 - unique.length;
 
-        showCsvStatus("success", msg);
+        // Persister côté serveur (merge + dedup avec la liste existante)
+        showCsvStatus("loading", "Sauvegarde en cours…");
+        const { ok: saveOk, data: saveData } = await apiPost(
+          "/api/subscribers",
+          { emails: unique },
+        );
+
+        if (saveOk && Array.isArray(saveData.subscribers)) {
+          mailingList = saveData.subscribers;
+          const msg =
+            skipped > 0
+              ? `${unique.length} adresse(s) importée(s) — ${skipped} ignorée(s). Total : ${mailingList.length}.`
+              : `${unique.length} adresse(s) importée(s). Total : ${mailingList.length}.`;
+          showCsvStatus("success", msg);
+        } else {
+          // Fallback client-side si l'API échoue
+          mailingList = [...new Set([...mailingList, ...unique])];
+          showCsvStatus("success", `${unique.length} adresse(s) importée(s) (non sauvegardées côté serveur).`);
+        }
+
         updateMailingUI();
         renderInscrits();
       } catch {
@@ -334,7 +358,12 @@ function renderInscrits(filter = "") {
     btn.title = "Supprimer";
     btn.setAttribute("aria-label", `Supprimer ${email}`);
     btn.textContent = "\u2715";
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", async () => {
+      // Supprimer côté serveur
+      await fetch(`/api/subscribers?email=${encodeURIComponent(email)}`, {
+        method: "DELETE",
+        credentials: "same-origin",
+      });
       mailingList = mailingList.filter((e) => e !== email);
       updateMailingUI();
       renderInscrits($("#inscrits-search")?.value || "");
@@ -371,12 +400,20 @@ function initMailForm() {
       showToast("Veuillez remplir l'objet et le contenu.");
       return;
     }
+    if (mailingList.length === 0) {
+      showToast("Aucun destinataire. Importez d'abord une liste CSV.");
+      return;
+    }
 
     const original = sendBtn.textContent;
     sendBtn.disabled = true;
     sendBtn.textContent = "Envoi…";
 
-    const { ok, data } = await apiPost("/api/send-mail", { subject, body });
+    const { ok, data } = await apiPost("/api/send-mail", {
+      subject,
+      body,
+      recipients: mailingList,
+    });
 
     sendBtn.textContent = original;
     sendBtn.disabled = false;

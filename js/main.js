@@ -1,26 +1,12 @@
 /**
- * Exposition — Ombres & Lumières
+ * Philippe Carpentier — Multi-page site
  * Main JavaScript
  */
 
-/* ── Utility ─────────────────────────────────────────────── */
 const $ = (sel, ctx = document) => ctx.querySelector(sel);
 const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
 
-/* ── Navigation scroll effect ────────────────────────────── */
-function initNav() {
-  const nav = $('.nav');
-  if (!nav) return;
-
-  const onScroll = () => {
-    nav.classList.toggle('scrolled', window.scrollY > 60);
-  };
-
-  window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll(); // initial check
-}
-
-/* ── Scroll reveal animations ────────────────────────────── */
+/* ── Scroll reveal ────────────────────────────────────────── */
 function initReveal() {
   const els = $$('.reveal');
   if (!els.length) return;
@@ -34,13 +20,13 @@ function initReveal() {
         }
       });
     },
-    { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+    { threshold: 0.1, rootMargin: '0px 0px -30px 0px' }
   );
 
   els.forEach(el => observer.observe(el));
 }
 
-/* ── Dynamic gallery loading ────────────────────────────── */
+/* ── Dynamic gallery loading ──────────────────────────────── */
 async function initGallery() {
   const grid = $('.gallery-grid');
   if (!grid) return;
@@ -70,7 +56,7 @@ async function initGallery() {
       titleEl.textContent = artwork.title;
 
       const techEl = document.createElement('span');
-      techEl.className = 't-caption';
+      techEl.className = 'gallery-item__technique';
       techEl.textContent = artwork.technique || '';
 
       const overlay = document.createElement('div');
@@ -83,54 +69,57 @@ async function initGallery() {
       grid.appendChild(article);
     });
   } catch {
-    // En cas d'erreur, on garde la galerie hardcodée
+    // Keep hardcoded gallery as fallback
   }
 }
 
-/* ── Gallery lightbox ────────────────────────────────────── */
+/* ── Lightbox ─────────────────────────────────────────────── */
 function initLightbox() {
-  const lightbox     = $('.lightbox');
-  const lightboxImg  = $('.lightbox__img');
+  const lightbox = $('.lightbox');
+  const lightboxImg = $('.lightbox__img');
   const lightboxTitle = $('.lightbox__title');
-  const lightboxDate  = $('.lightbox__date');
-  const closeBtn     = $('.lightbox__close');
-  const items        = $$('.gallery-item');
+  const lightboxDate = $('.lightbox__date');
+  const closeBtn = $('.lightbox__close');
 
   if (!lightbox) return;
 
-  const openLightbox = (item) => {
-    const img   = item.dataset.full  || item.querySelector('img')?.src;
+  const open = (item) => {
+    const img = item.dataset.full || item.querySelector('img')?.src;
     const title = item.dataset.title || '';
-    const date  = item.dataset.date  || '';
+    const date = item.dataset.date || '';
 
-    lightboxImg.src = img || '';
+    if (!img) return;
+
+    lightboxImg.src = img;
     if (lightboxTitle) lightboxTitle.textContent = title;
-    if (lightboxDate)  lightboxDate.textContent  = date;
+    if (lightboxDate) lightboxDate.textContent = date;
 
     lightbox.classList.add('active');
     document.body.style.overflow = 'hidden';
   };
 
-  const closeLightbox = () => {
+  const close = () => {
     lightbox.classList.remove('active');
     document.body.style.overflow = '';
   };
 
-  items.forEach(item => {
-    item.addEventListener('click', () => openLightbox(item));
+  // Delegate click on gallery items (works with dynamic content)
+  document.addEventListener('click', (e) => {
+    const item = e.target.closest('.gallery-item');
+    if (item) open(item);
   });
 
-  closeBtn?.addEventListener('click', closeLightbox);
+  closeBtn?.addEventListener('click', close);
   lightbox.addEventListener('click', (e) => {
-    if (e.target === lightbox) closeLightbox();
+    if (e.target === lightbox) close();
   });
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'Escape') close();
   });
 }
 
-/* ── Hero image load animation ───────────────────────────── */
+/* ── Hero ─────────────────────────────────────────────────── */
 function initHero() {
   const hero = $('.hero');
   if (!hero) return;
@@ -148,7 +137,7 @@ function initHero() {
   }
 }
 
-/* ── Contact form ────────────────────────────────────────── */
+/* ── Contact form ─────────────────────────────────────────── */
 function initContactForm() {
   const form = $('.contact__form');
   if (!form) return;
@@ -161,7 +150,6 @@ function initContactForm() {
     btn.textContent = 'Envoi en cours…';
     btn.disabled = true;
 
-    // Simulate async submit — replace with actual fetch when backend is ready
     setTimeout(() => {
       btn.textContent = 'Message envoyé';
       form.reset();
@@ -174,48 +162,19 @@ function initContactForm() {
   });
 }
 
-/* ── Parallax (subtle) ───────────────────────────────────── */
-function initParallax() {
-  const hero = $('.hero__bg-img');
-  if (!hero || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-  window.addEventListener('scroll', () => {
-    const y = window.scrollY;
-    hero.style.transform = `scale(1) translateY(${y * 0.25}px)`;
-  }, { passive: true });
-}
-
-/* ── Smooth active nav link ──────────────────────────────── */
-function initActiveNav() {
-  const sections = $$('section[id]');
-  const links    = $$('.nav__links a[href^="#"]');
-
-  if (!sections.length || !links.length) return;
-
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach(entry => {
-        if (!entry.isIntersecting) return;
-        const id = entry.target.id;
-        links.forEach(link => {
-          link.classList.toggle('active', link.getAttribute('href') === `#${id}`);
-        });
-      });
-    },
-    { threshold: 0.4 }
-  );
-
-  sections.forEach(s => observer.observe(s));
-}
-
-/* ── Init ────────────────────────────────────────────────── */
+/* ── Init ─────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', async () => {
-  initNav();
-  await initGallery();
-  initReveal();
-  initLightbox();
   initHero();
+
+  // Gallery page
+  if ($('.gallery-grid')) {
+    await initGallery();
+    initLightbox();
+  }
+
+  // Contact page
   initContactForm();
-  initParallax();
-  initActiveNav();
+
+  // Reveal (must be last to catch dynamic elements)
+  initReveal();
 });
