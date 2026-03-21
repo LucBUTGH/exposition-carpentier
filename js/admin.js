@@ -393,13 +393,6 @@ function initMailForm() {
   if (!sendBtn) return;
 
   sendBtn.addEventListener("click", async () => {
-    const subject = $("#mail-subject")?.value.trim();
-    const body = $("#mail-body")?.value.trim();
-
-    if (!subject || !body) {
-      showToast("Veuillez remplir l'objet et le contenu.");
-      return;
-    }
     if (mailingList.length === 0) {
       showToast("Aucun destinataire. Importez d'abord une liste CSV.");
       return;
@@ -410,8 +403,6 @@ function initMailForm() {
     sendBtn.textContent = "Envoi…";
 
     const { ok, data } = await apiPost("/api/send-mail", {
-      subject,
-      body,
       recipients: mailingList,
     });
 
@@ -420,8 +411,6 @@ function initMailForm() {
 
     if (ok) {
       showToast(data.message || "Message envoyé.");
-      $("#mail-subject").value = "";
-      $("#mail-body").value = "";
     } else {
       showToast(data.error || "Erreur lors de l'envoi.");
     }

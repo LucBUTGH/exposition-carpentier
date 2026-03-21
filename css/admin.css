@@ -575,29 +575,6 @@ a {
   gap: 1rem;
 }
 
-.mail-section .field-group input,
-.mail-section .field-group textarea {
-  background: var(--c-bg);
-  border: 1px solid var(--c-border);
-  color: var(--c-white);
-  font-family: var(--font-ui);
-  font-size: 0.85rem;
-  padding: 0.65rem 0.9rem;
-  outline: none;
-  transition: border-color var(--transition);
-  width: 100%;
-  border-radius: var(--radius);
-  resize: vertical;
-}
-
-.mail-section .field-group input:focus,
-.mail-section .field-group textarea:focus {
-  border-color: var(--c-gold);
-}
-
-.mail-section .field-group textarea {
-  min-height: 120px;
-}
 
 .mail-actions {
   display: flex;
@@ -1075,3 +1052,4 @@ a {
     max-height: 200px;
   }
 }
+

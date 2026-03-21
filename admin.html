@@ -242,26 +242,16 @@
                 </div>
                 <div id="csv-status" class="csv-status" hidden></div>
 
-                <!-- Formulaire mail -->
-                <div class="field-group" style="margin-top: 1.5rem">
-                  <label for="mail-subject">Objet</label>
-                  <input
-                    id="mail-subject"
-                    type="text"
-                    name="mail-subject"
-                    placeholder="Objet du message…"
+                <!-- Prévisualisation de l'image à envoyer -->
+                <div class="mail-image-preview" style="margin-top: 1.5rem">
+                  <p style="margin-bottom: .75rem; opacity: .7">Image qui sera envoyée :</p>
+                  <img
+                    src="assets/mail.png"
+                    alt="Image de l'email"
+                    style="max-width: 100%; border-radius: 8px; border: 1px solid rgba(255,255,255,.1)"
                   />
                 </div>
-                <div class="field-group">
-                  <label for="mail-body">Message</label>
-                  <textarea
-                    id="mail-body"
-                    name="mail-body"
-                    placeholder="Rédigez votre message ici…"
-                    rows="6"
-                  ></textarea>
-                </div>
-                <div class="mail-actions">
+                <div class="mail-actions" style="margin-top: 1.5rem">
                   <button class="btn-send-mail" type="button">
                     Envoyer à tous
                   </button>
@@ -489,6 +479,7 @@
       </main>
     </div>
     <!-- /view-admin -->
+
 
     <!-- Toast notification -->
     <div class="toast" role="status" aria-live="polite"></div>

@@ -29,17 +29,15 @@ module.exports = async function handler(req, res) {
     return json(res, 500, { error: 'Configuration Resend manquante (RESEND_API_KEY / RESEND_FROM)' });
   }
 
-  const { subject, body, recipients } = req.body || {};
+  const { recipients } = req.body || {};
 
-  if (!subject || !subject.trim()) {
-    return json(res, 400, { error: 'Objet requis' });
-  }
-  if (!body || !body.trim()) {
-    return json(res, 400, { error: 'Contenu requis' });
-  }
   if (!Array.isArray(recipients) || recipients.length === 0) {
     return json(res, 400, { error: 'Liste de destinataires requise' });
   }
+
+  const subject = process.env.RESEND_SUBJECT || 'Exposition Ombres & Lumières';
+  const imageUrl = process.env.RESEND_IMAGE_URL || 'https://placehold.co/600x400?text=Image';
+  const html = `<div style="text-align:center"><img src="${imageUrl}" alt="Exposition" style="max-width:100%;height:auto" /></div>`;
 
   const resend = new Resend(apiKey);
 
@@ -51,12 +49,11 @@ module.exports = async function handler(req, res) {
   for (let i = 0; i < recipients.length; i += BATCH_SIZE) {
     const batch = recipients.slice(i, i + BATCH_SIZE);
 
-    // Créer un message par destinataire dans le batch
     const messages = batch.map(to => ({
       from,
       to,
-      subject: subject.trim(),
-      html: body.trim().replace(/\n/g, '<br>'),
+      subject,
+      html,
     }));
 
     try {
