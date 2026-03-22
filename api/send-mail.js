@@ -37,7 +37,12 @@ module.exports = async function handler(req, res) {
 
   const subject = process.env.RESEND_SUBJECT || 'Exposition Ombres & Lumières';
   const imageUrl = process.env.RESEND_IMAGE_URL || 'https://placehold.co/600x400?text=Image';
-  const html = `<div style="text-align:center"><img src="${imageUrl}" alt="Exposition" style="max-width:100%;height:auto" /></div>`;
+  const html = `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
+    <p>Bonjour,</p>
+    <p>Vous trouverez ci-dessous l'affiche de l'exposition ayant lieu du 30 avril au 13 mai 2026.</p>
+    <div style="text-align:center;margin:20px 0"><img src="${imageUrl}" alt="Exposition" style="max-width:100%;height:auto" /></div>
+    <p>Bonne journée</p>
+  </div>`;
 
   const resend = new Resend(apiKey);
 
