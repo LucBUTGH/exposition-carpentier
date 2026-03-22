@@ -42,9 +42,11 @@ module.exports = async function handler(req, res) {
   const html = `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px">
     <p style="margin:0 0 16px">Bonjour,</p>
     <p style="margin:0 0 16px">Vous trouverez ci-dessous l'affiche de l'exposition ayant lieu du 30 avril au 13 mai 2026.</p>
-    <p style="margin:0 0 16px">Nous vous invitons à venir découvrir cette exposition qui mettra en lumière les œuvres de l'artiste. L'entrée est libre et gratuite.</p>
+    <p style="margin:0 0 16px">Nous vous invitons à venir découvrir cette exposition qui mettra en lumière les œuvres de l'artiste. L'entrée est libre et gratuite. N'hésitez pas à partager cette invitation avec vos proches, amis et collègues qui pourraient être intéressés.</p>
+    <p style="margin:0 0 16px">L'exposition se tiendra du mercredi 30 avril au mardi 13 mai 2026. Nous serions ravis de vous y accueillir.</p>
     <div style="text-align:center;margin:24px 0"><img src="${imageUrl}" alt="Affiche de l'exposition Ombres et Lumières - du 30 avril au 13 mai 2026" style="max-width:100%;height:auto" /></div>
-    <p style="margin:16px 0 0">Bonne journée</p>
+    <p style="margin:16px 0 0">Bonne journée,</p>
+    <p style="margin:0">Cordialement</p>
   </div>`;
 
   const resend = new Resend(apiKey);
