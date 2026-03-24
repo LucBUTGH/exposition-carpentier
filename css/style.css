@@ -154,6 +154,38 @@ ul, ol {
   width: 100%;
 }
 
+/* ── Burger (mobile) ──────────────────────────────────────── */
+.nav__burger {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  flex-direction: column;
+  gap: 5px;
+  z-index: 210;
+}
+
+.nav__burger span {
+  display: block;
+  width: 20px;
+  height: 1.5px;
+  background: var(--black);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.nav__burger.open span:nth-child(1) {
+  transform: translateY(6.5px) rotate(45deg);
+}
+
+.nav__burger.open span:nth-child(2) {
+  opacity: 0;
+}
+
+.nav__burger.open span:nth-child(3) {
+  transform: translateY(-6.5px) rotate(-45deg);
+}
+
 /* ── Page wrapper ─────────────────────────────────────────── */
 .page {
   padding-top: 56px;
@@ -809,6 +841,36 @@ ul, ol {
   line-height: 1.6;
 }
 
+.contact__info-item {
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.contact__info-item:first-child {
+  border-top: 1px solid var(--gray-200);
+}
+
+.contact__info-label {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gray-500);
+  margin-bottom: 0.35rem;
+}
+
+.contact__info-value {
+  font-size: 1.1rem;
+  font-weight: 300;
+  color: var(--black);
+  transition: color var(--transition);
+}
+
+.contact__info-value:hover {
+  color: var(--gold);
+}
+
 .contact__form {
   display: flex;
   flex-direction: column;
@@ -990,8 +1052,46 @@ ul, ol {
 }
 
 @media (max-width: 768px) {
+  .nav__burger {
+    display: flex;
+  }
+
   .nav__links {
-    display: none;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 0 var(--gutter);
+    gap: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+
+  .nav__links.open {
+    max-height: 300px;
+  }
+
+  .nav__links li {
+    border-bottom: 1px solid var(--gray-100);
+  }
+
+  .nav__links li:last-child {
+    border-bottom: none;
+  }
+
+  .nav__links a {
+    display: block;
+    padding: 0.85rem 0;
+    font-size: 0.8rem;
+  }
+
+  .nav__links a::after {
+    bottom: 0.65rem;
   }
 
   .gallery-grid {

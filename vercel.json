@@ -26,6 +26,7 @@
     { "source": "/exposition", "destination": "/exposition.html" },
     { "source": "/galerie", "destination": "/galerie.html" },
     { "source": "/artiste", "destination": "/artiste.html" },
-{ "source": "/admin", "destination": "/admin.html" }
+    { "source": "/contact", "destination": "/contact.html" },
+    { "source": "/admin", "destination": "/admin.html" }
   ]
 }

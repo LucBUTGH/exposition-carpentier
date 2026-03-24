@@ -176,10 +176,32 @@ function initArtistPortrait() {
   else img.addEventListener('load', hide);
 }
 
+/* ── Mobile nav ──────────────────────────────────────────── */
+function initMobileNav() {
+  const burger = $('.nav__burger');
+  const links = $('.nav__links');
+  if (!burger || !links) return;
+
+  burger.addEventListener('click', () => {
+    const open = burger.classList.toggle('open');
+    links.classList.toggle('open');
+    burger.setAttribute('aria-expanded', open);
+  });
+
+  links.addEventListener('click', (e) => {
+    if (e.target.tagName === 'A') {
+      burger.classList.remove('open');
+      links.classList.remove('open');
+      burger.setAttribute('aria-expanded', 'false');
+    }
+  });
+}
+
 /* ── Init ─────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', async () => {
   initHero();
   initArtistPortrait();
+  initMobileNav();
 
   // Gallery page
   if ($('.gallery-grid')) {

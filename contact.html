@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Philippe Carpentier — Peintures &amp; Thierry Farcy Sculptures. Vernissage le 30 avril 2026. Galerie des Croisiers, Caen."
+      content="Contactez-nous pour toute information sur l'exposition Philippe Carpentier — Galerie des Croisiers, Caen."
     />
-    <title>Philippe Carpentier — Galerie des Croisiers, Caen</title>
+    <title>Contact — Philippe Carpentier</title>
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
@@ -17,7 +17,7 @@
         <li><a href="/exposition">L'exposition</a></li>
         <li><a href="/galerie">Oeuvres</a></li>
         <li><a href="/artiste">L'artiste</a></li>
-        <li><a href="/contact">Contact</a></li>
+        <li><a class="active" href="/contact">Contact</a></li>
       </ul>
       <button class="nav__burger" aria-label="Menu" aria-expanded="false">
         <span></span><span></span><span></span>
@@ -25,27 +25,31 @@
     </nav>
 
     <main class="page">
-      <section class="hero" aria-label="En-tête">
-        <div class="hero__bg">
-          <img
-            class="hero__bg-img"
-            src="assets/image1.jpg"
-            alt="Oeuvre de Philippe Carpentier"
-            onerror="this.style.display = 'none'"
-          />
-        </div>
-        <div class="hero__content">
-          <h1 class="hero__title">Philippe<br />Carpentier</h1>
-          <p class="hero__subtitle">
-            Peintures &amp; Sculptures — avec Thierry Farcy
+      <div class="page__inner">
+        <div class="contact-layout">
+          <span class="section-label reveal">Contact</span>
+          <h1 class="contact__title reveal">Nous contacter</h1>
+          <p class="contact__subtitle reveal">
+            Pour toute information concernant l'exposition ou les oeuvres de
+            Philippe Carpentier.
           </p>
-          <div class="hero__info">
-            <span class="hero__info-item">Galerie des Croisiers, Caen</span>
-            <span class="hero__info-sep"></span>
-            <span class="hero__info-item">30 avril — 13 mai 2026</span>
+
+          <div class="reveal">
+            <p class="contact__info-item">
+              <span class="contact__info-label">Email</span>
+              <a class="contact__info-value" href="mailto:olivierdomi@hotmail.com"
+                >olivierdomi@hotmail.com</a
+              >
+            </p>
+            <p class="contact__info-item">
+              <span class="contact__info-label">Téléphone</span>
+              <a class="contact__info-value" href="tel:+33102030405"
+                >01 02 03 04 05</a
+              >
+            </p>
           </div>
         </div>
-      </section>
+      </div>
     </main>
 
     <footer class="footer">
