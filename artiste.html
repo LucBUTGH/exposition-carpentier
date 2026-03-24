@@ -29,7 +29,7 @@
                 class="artist__portrait-img"
                 src="assets/artist.jpg"
                 alt="Philippe Carpentier"
-                onerror="this.style.display='none'"
+                onload="this.nextElementSibling.style.display = 'none'"
               />
               <div class="img-placeholder">
                 <svg
@@ -65,13 +65,19 @@
                 consacre pleinement à son art à partir de 1976.
               </p>
               <p>
-                Sa rencontre dans les années 1980 avec la calligraphe japonaise
-                Shunso Machi lui ouvre les portes des peintures sur grands
-                formats. Il travaille exclusivement à l'eau : aquarelle,
-                détrempe, encre, colle de peau, gomme arabique. Ses oeuvres sont
-                entrées dans les collections du Musée Pavlova à Kamakura, du
-                Musée des Beaux-Arts de Caen et du siège de la Société Générale
-                à La Défense.
+                Sa rencontre dans les années 1980 avec la célèbre calligraphe
+                japonaise Sunsho Machi lui ouvre les portes des peintures sur
+                grands formats. Cette expérience lui donne pour toujours le
+                goût du matériau vrai, du geste authentique, celui qui ne
+                permet aucune reprise, garant d'une sincérité totale. Il
+                travaille exclusivement à l'eau : aquarelle, détrempe, encre,
+                colle de peau, gomme arabique.
+              </p>
+              <p>
+                Ses oeuvres sont entrées dans les collections du Musée Pavlova
+                à Kamakura, des bureaux présidentiels de la BRED à Paris, du
+                siège social de la Société Générale à La Défense et du Musée
+                des Beaux-Arts de Caen.
               </p>
               <p>
                 Il s'éteint dans sa maison d'Arromanches le 7 mars 2011, au
@@ -81,22 +87,38 @@
 
             <div class="artist__quote reveal">
               <blockquote>
-                &laquo; Nous sommes au bout des terres, dans un territoire
-                limite où règne une grande simplicité qui est en même temps une
-                simple grandeur. &raquo;
+                &laquo; Carpentier aime les lignes longues, fortes et fines.
+                Au premier coup d'oeil jeté sur ses tableaux, on pense à des
+                estrans, à tout ce qui est étendues… Y prédominent, poussés
+                jusqu'à l'abstraction, tous les éléments d'un espace
+                maritime — éléments marins obscurs et mouvants qui donnent
+                lieu aussi par moments à une clarté qui ressemble à cette
+                secrète sérénité que l'on peut éprouver au milieu des plus
+                grandes turbulences. Nous sommes au bout des terres, dans un
+                territoire limite où règne une grande simplicité qui est en
+                même temps une simple grandeur. Le suprême orgueil et
+                l'extrême modestie se retrouvent dans un même lieu ultime de
+                dépouillement et de dénuement. &raquo;
               </blockquote>
               <cite>Kenneth White — préface, Éditions Arichi, Paris, 2005</cite>
             </div>
 
             <div class="artist__quote reveal">
               <blockquote>
-                &laquo; Dépourvues de toute référence réaliste, ses peintures
-                s'imposent plutôt comme une émotion devant un lieu idéal.
-                &raquo;
+                &laquo; La conception synthétique du paysage définie par
+                Philippe Carpentier fait de lui un peintre de l'espace. Rien
+                dans ses compositions n'arrête le regard, ne borne la
+                perspective. Tout semble mis en oeuvre pour permettre la
+                divagation du spectateur qui, envahi par une sensation
+                d'apesanteur et de liberté, est emporté comme dans un rêve.
+                Dépourvues de toute référence réaliste, ses peintures n'ont
+                pas de précision météorologique (comme celles de Boudin par
+                exemple), elles s'imposent plutôt comme une émotion devant un
+                lieu idéal. &raquo;
               </blockquote>
               <cite
-                >Patrick Ramade — catalogue du musée des Beaux-Arts de Caen,
-                2009</cite
+                >Patrick Ramade — catalogue de l'exposition du musée des
+                Beaux-Arts de Caen, éditions Burozoïque, 2009</cite
               >
             </div>
 
@@ -104,14 +126,17 @@
 
             <!-- Timeline -->
             <div class="reveal">
-              <span class="section-label" style="margin-bottom: 1.5rem; display: block">
+              <span
+                class="section-label"
+                style="margin-bottom: 1.5rem; display: block"
+              >
                 Expositions principales
               </span>
               <ol class="expo-timeline">
                 <li class="expo-timeline__item">
-                  <span class="expo-timeline__year">1969</span>
+                  <span class="expo-timeline__year">1972</span>
                   <span class="expo-timeline__detail"
-                    >Montpellier — Centre culturel</span
+                    >Paris — Galerie Le Nombre d'Or</span
                   >
                 </li>
                 <li class="expo-timeline__item">
@@ -121,35 +146,22 @@
                   >
                 </li>
                 <li class="expo-timeline__item">
-                  <span class="expo-timeline__year">1977</span>
+                  <span class="expo-timeline__year">1981</span>
                   <span class="expo-timeline__detail"
-                    >Genève — Galerie Intercontinental</span
+                    >Ménerbes — Galerie Cance Manguin</span
                   >
                 </li>
                 <li class="expo-timeline__item">
-                  <span class="expo-timeline__year">1980</span>
+                  <span class="expo-timeline__year">1981</span>
                   <span class="expo-timeline__detail"
-                    >Eindhoven — Centre culturel</span
+                    >Paris — Galerie Marines-Cachin</span
                   >
                 </li>
                 <li class="expo-timeline__item">
-                  <span class="expo-timeline__year">1982</span>
+                  <span class="expo-timeline__year">1983–1984</span>
                   <span class="expo-timeline__detail"
-                    >Paris — Grand Palais, Salon du dessin et de la peinture à
-                    l'eau</span
-                  >
-                </li>
-                <li class="expo-timeline__item">
-                  <span class="expo-timeline__year">1982</span>
-                  <span class="expo-timeline__detail"
-                    >Paris — Palais de Chaillot, Salon de la Marine</span
-                  >
-                </li>
-                <li class="expo-timeline__item">
-                  <span class="expo-timeline__year">1984</span>
-                  <span class="expo-timeline__detail"
-                    >Paris &amp; Tokyo — Présentation d'oeuvres communes avec
-                    Shunso Machi, sur papier et paravents</span
+                    >Tokyo &amp; Paris — Expose avec la calligraphe japonaise
+                    Shunso Machi</span
                   >
                 </li>
                 <li class="expo-timeline__item">
@@ -160,21 +172,112 @@
                   >
                 </li>
                 <li class="expo-timeline__item">
+                  <span class="expo-timeline__year">1987</span>
+                  <span class="expo-timeline__detail"
+                    >Derry — Gordon Gallery</span
+                  >
+                </li>
+                <li class="expo-timeline__item">
+                  <span class="expo-timeline__year">1988</span>
+                  <span class="expo-timeline__detail"
+                    >Paris — Galerie Claude Aubry</span
+                  >
+                </li>
+                <li class="expo-timeline__item">
+                  <span class="expo-timeline__year">1989</span>
+                  <span class="expo-timeline__detail"
+                    >Derry — Gordon Gallery</span
+                  >
+                </li>
+                <li class="expo-timeline__item">
                   <span class="expo-timeline__year">1993</span>
                   <span class="expo-timeline__detail"
                     >Paris — UNESCO, Festival culturel franco-japonais</span
                   >
                 </li>
                 <li class="expo-timeline__item">
-                  <span class="expo-timeline__year">2006 &amp; 2011</span>
+                  <span class="expo-timeline__year">1993</span>
+                  <span class="expo-timeline__detail"
+                    >Paris — Galerie Akié Arichi</span
+                  >
+                </li>
+                <li class="expo-timeline__item">
+                  <span class="expo-timeline__year">2000</span>
+                  <span class="expo-timeline__detail"
+                    >L'Isle-sur-la-Sorgue — Galerie La Tour des
+                    Cardinaux</span
+                  >
+                </li>
+                <li class="expo-timeline__item">
+                  <span class="expo-timeline__year">2002</span>
+                  <span class="expo-timeline__detail"
+                    >Paris — Médiavillage Galerie</span
+                  >
+                </li>
+                <li class="expo-timeline__item">
+                  <span class="expo-timeline__year">2003</span>
+                  <span class="expo-timeline__detail"
+                    >Marseille — Galerie La Tour des Cardinaux</span
+                  >
+                </li>
+                <li class="expo-timeline__item">
+                  <span class="expo-timeline__year">2006</span>
                   <span class="expo-timeline__detail"
                     >Bruxelles — Galerie Fred Lanzenberg</span
+                  >
+                </li>
+                <li class="expo-timeline__item">
+                  <span class="expo-timeline__year">2007</span>
+                  <span class="expo-timeline__detail"
+                    >Derry — Gordon Gallery</span
+                  >
+                </li>
+                <li class="expo-timeline__item">
+                  <span class="expo-timeline__year">2008</span>
+                  <span class="expo-timeline__detail"
+                    >Strasbourg — Galerie Guérin, Art Strasbourg</span
                   >
                 </li>
                 <li class="expo-timeline__item">
                   <span class="expo-timeline__year">2009</span>
                   <span class="expo-timeline__detail"
                     >Caen — Musée des Beaux-Arts</span
+                  >
+                </li>
+                <li class="expo-timeline__item">
+                  <span class="expo-timeline__year">2010 &amp; 2013</span>
+                  <span class="expo-timeline__detail"
+                    >Bruxelles — Galerie Fred Lanzenberg</span
+                  >
+                </li>
+              </ol>
+            </div>
+
+            <div class="section-divider"></div>
+
+            <!-- Bibliographie selective -->
+            <div class="reveal">
+              <span
+                class="section-label"
+                style="margin-bottom: 1.5rem; display: block"
+              >
+                Bibliographie sélective
+              </span>
+              <ol class="expo-timeline">
+                <li class="expo-timeline__item">
+                  <span class="expo-timeline__year">2005</span>
+                  <span class="expo-timeline__detail"
+                    >Monographie — Éditions Arichi, Paris. Préface de Kenneth
+                    White, textes de Françoise Barbe-Gall et Pierre
+                    Hodgson.</span
+                  >
+                </li>
+                <li class="expo-timeline__item">
+                  <span class="expo-timeline__year">2009</span>
+                  <span class="expo-timeline__detail"
+                    >Catalogue de l'exposition rétrospective du musée des
+                    Beaux-Arts de Caen, 7 février – 13 avril 2009. Éditions
+                    Burozoïque.</span
                   >
                 </li>
               </ol>
@@ -184,7 +287,10 @@
 
             <!-- Hommage / Actualite -->
             <div class="reveal">
-              <span class="section-label" style="margin-bottom: 1.5rem; display: block">
+              <span
+                class="section-label"
+                style="margin-bottom: 1.5rem; display: block"
+              >
                 Hommage &amp; Actualité
               </span>
 
@@ -253,17 +359,16 @@
 
             <!-- Poeme -->
             <div class="reveal" style="max-width: 600px">
-              <span class="section-label" style="margin-bottom: 1.5rem; display: block">
+              <span
+                class="section-label"
+                style="margin-bottom: 1.5rem; display: block"
+              >
                 En hommage à Philippe Carpentier
               </span>
               <blockquote class="cheng-poem__text">
                 <p>Il le sait : au début était le Rien, puis vint</p>
-                <p>
-                  Le Tout. Il trace alors les vagues en geste d'accueil,
-                </p>
-                <p>
-                  Pour que la terre demeure promesse et advenance,
-                </p>
+                <p>Le Tout. Il trace alors les vagues en geste d'accueil,</p>
+                <p>Pour que la terre demeure promesse et advenance,</p>
                 <p>Pour que la lumière soit toujours au rendez-vous.</p>
               </blockquote>
               <cite class="cheng-poem__cite"
