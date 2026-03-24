@@ -162,9 +162,24 @@ function initContactForm() {
   });
 }
 
+/* ── Artist portrait placeholder ──────────────────────────── */
+function initArtistPortrait() {
+  const img = $('.artist__portrait-img');
+  if (!img) return;
+
+  const placeholder = img.nextElementSibling;
+  if (!placeholder) return;
+
+  const hide = () => { placeholder.style.display = 'none'; };
+
+  if (img.complete) hide();
+  else img.addEventListener('load', hide);
+}
+
 /* ── Init ─────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', async () => {
   initHero();
+  initArtistPortrait();
 
   // Gallery page
   if ($('.gallery-grid')) {
