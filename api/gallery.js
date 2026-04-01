@@ -156,10 +156,14 @@ module.exports = async function handler(req, res) {
     const artwork = artworks.find(a => a.id === id);
     if (!artwork) return json(res, 404, { error: 'Œuvre introuvable' });
 
-    try { await del(artwork.imageUrl); } catch { /* blob déjà supprimé */ }
-
-    const updated = artworks.filter(a => a.id !== id);
-    await saveArtworks(updated);
+    try {
+      await del(artwork.imageUrl).catch(() => {/* blob déjà supprimé */});
+      const updated = artworks.filter(a => a.id !== id);
+      await saveArtworks(updated);
+    } catch (err) {
+      console.error('Delete error:', err);
+      return json(res, 500, { error: 'Erreur lors de la suppression' });
+    }
 
     return json(res, 200, { ok: true });
   }
