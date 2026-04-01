@@ -1,7 +1,97 @@
 /* ============================================================
    Philippe Carpentier — Site multi-pages
-   Inspiré maxwechsler.fr : blanc, Helvetica, minimal
+   Inspiré maxwechsler.fr : blanc, minimal
    ============================================================ */
+
+/* ── Fonts — Century Gothic Paneuropean ─────────────────── */
+@font-face {
+  font-family: "Century Gothic";
+  src: url("../assets/fonts/CenturyGothicPaneuropeanThin.ttf")
+    format("truetype");
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Century Gothic";
+  src: url("../assets/fonts/CenturyGothicPaneuropeanThinItalic.ttf")
+    format("truetype");
+  font-weight: 100;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Century Gothic";
+  src: url("../assets/fonts/CenturyGothicPaneuropeanLight.ttf")
+    format("truetype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Century Gothic";
+  src: url("../assets/fonts/CenturyGothicPaneuropeanLightItalic.ttf")
+    format("truetype");
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Century Gothic";
+  src: url("../assets/fonts/CenturyGothicPaneuropeanRegular.ttf")
+    format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Century Gothic";
+  src: url("../assets/fonts/CenturyGothicPaneuropeanItalic.ttf")
+    format("truetype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Century Gothic";
+  src: url("../assets/fonts/CenturyGothicPaneuropeanSemiBold.ttf")
+    format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Century Gothic";
+  src: url("../assets/fonts/CenturyGothicPaneuropeanSemiBoldItalic.ttf")
+    format("truetype");
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Century Gothic";
+  src: url("../assets/fonts/CenturyGothicPaneuropeanBold.ttf")
+    format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Century Gothic";
+  src: url("../assets/fonts/CenturyGothicPaneuropeanBoldItalic.ttf")
+    format("truetype");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Century Gothic";
+  src: url("../assets/fonts/CenturyGothicPaneuropeanExtraBold.ttf")
+    format("truetype");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
 
 /* ── Reset & Base ─────────────────────────────────────────── */
 *,
@@ -25,7 +115,7 @@
   --gray-800: #333333;
   --gold: #b8922e;
 
-  --font: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font: "Century Gothic", Arial, sans-serif;
   --transition: 0.3s ease;
   --gutter: 5vw;
   --max-width: 1400px;
@@ -55,7 +145,8 @@ a {
   text-decoration: none;
 }
 
-ul, ol {
+ul,
+ol {
   list-style: none;
 }
 
@@ -171,7 +262,9 @@ ul, ol {
   width: 20px;
   height: 1.5px;
   background: var(--black);
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
 }
 
 .nav__burger.open span:nth-child(1) {
@@ -234,8 +327,14 @@ ul, ol {
 }
 
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .hero__title {
@@ -290,8 +389,15 @@ ul, ol {
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 0.4; transform: translateX(-50%) translateY(0); }
-  50% { opacity: 1; transform: translateX(-50%) translateY(4px); }
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(4px);
+  }
 }
 
 /* ── Section titles ───────────────────────────────────────── */
@@ -757,7 +863,9 @@ ul, ol {
   align-items: center;
   padding: 1.75rem 0;
   border-bottom: 1px solid var(--gray-200);
-  transition: background var(--transition), padding var(--transition);
+  transition:
+    background var(--transition),
+    padding var(--transition);
 }
 
 .event-item:first-child {
@@ -998,7 +1106,9 @@ ul, ol {
 .reveal {
   opacity: 0;
   transform: translateY(20px);
-  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .reveal.visible {
@@ -1006,9 +1116,15 @@ ul, ol {
   transform: translateY(0);
 }
 
-.reveal-delay-1 { transition-delay: 0.08s; }
-.reveal-delay-2 { transition-delay: 0.16s; }
-.reveal-delay-3 { transition-delay: 0.24s; }
+.reveal-delay-1 {
+  transition-delay: 0.08s;
+}
+.reveal-delay-2 {
+  transition-delay: 0.16s;
+}
+.reveal-delay-3 {
+  transition-delay: 0.24s;
+}
 
 /* ── Responsive ───────────────────────────────────────────── */
 @media (max-width: 1024px) {
