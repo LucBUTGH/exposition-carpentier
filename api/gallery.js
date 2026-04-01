@@ -75,6 +75,7 @@ async function saveArtworks(artworks) {
     access: 'public',
     contentType: 'application/json',
     addRandomSuffix: false,
+    allowOverwrite: true,
   });
   _cache = artworks;
 }
@@ -102,7 +103,6 @@ module.exports = async function handler(req, res) {
 
     const { title, technique, image, imageType } = req.body || {};
 
-    if (!title || !title.trim()) return json(res, 400, { error: 'Titre requis' });
     if (!image) return json(res, 400, { error: 'Image requise' });
 
     const buffer = Buffer.from(image, 'base64');
@@ -127,7 +127,7 @@ module.exports = async function handler(req, res) {
 
     const artwork = {
       id,
-      title: title.trim(),
+      title: (title || '').trim(),
       technique: (technique || '').trim(),
       imageUrl: blob.url,
       addedAt: new Date().toISOString(),
@@ -152,17 +152,29 @@ module.exports = async function handler(req, res) {
     const id = (req.query.id || '').trim();
     if (!id) return json(res, 400, { error: 'ID requis' });
 
+    // Invalider le cache pour relire depuis le Blob Store
+    _cache = null;
     const artworks = await getArtworks();
     const artwork = artworks.find(a => a.id === id);
     if (!artwork) return json(res, 404, { error: 'Œuvre introuvable' });
 
     try {
-      await del(artwork.imageUrl).catch(() => {/* blob déjà supprimé */});
-      const updated = artworks.filter(a => a.id !== id);
-      await saveArtworks(updated);
+      console.log('Deleting blob:', artwork.imageUrl);
+      await del(artwork.imageUrl);
+      console.log('Blob deleted OK');
     } catch (err) {
-      console.error('Delete error:', err);
-      return json(res, 500, { error: 'Erreur lors de la suppression' });
+      console.error('Blob del error:', err.message, err.stack);
+      // on continue même si le blob est déjà supprimé
+    }
+
+    try {
+      const updated = artworks.filter(a => a.id !== id);
+      console.log('Saving metadata, remaining:', updated.length);
+      await saveArtworks(updated);
+      console.log('Metadata saved OK');
+    } catch (err) {
+      console.error('Metadata save error:', err.message, err.stack);
+      return json(res, 500, { error: 'Erreur lors de la suppression (sauvegarde métadonnées)' });
     }
 
     return json(res, 200, { ok: true });

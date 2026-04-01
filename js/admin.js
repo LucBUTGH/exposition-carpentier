@@ -596,10 +596,6 @@ function initGalerie() {
     const title = $("#galerie-title")?.value.trim();
     const technique = $("#galerie-technique")?.value.trim();
 
-    if (!title) {
-      showGalerieStatus("error", "Le titre est requis.");
-      return;
-    }
     if (!galerieSelectedFile) {
       showGalerieStatus("error", "Aucune image sélectionnée.");
       return;
