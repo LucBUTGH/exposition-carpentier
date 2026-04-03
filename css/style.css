@@ -766,6 +766,11 @@ ol {
   margin-bottom: 1.5rem;
 }
 
+.artist__bio-img {
+  width: 100%;
+  margin: 1.5rem 0 2rem;
+}
+
 .artist__quote {
   margin: 2.5rem 0;
   padding: 1.5rem 2rem;
