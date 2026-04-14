@@ -7,3 +7,7 @@ Thumbs.db
 desktop.ini
 
 .env*.local
+
+# Put csv files 
+
+*.csv
