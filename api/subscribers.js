@@ -38,6 +38,7 @@ async function saveSubscribers(subscribers) {
     access: 'public',
     contentType: 'application/json',
     addRandomSuffix: false,
+    allowOverwrite: true,
   });
   _cache = subscribers;
 }

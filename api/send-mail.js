@@ -46,12 +46,15 @@ module.exports = async function handler(req, res) {
   }
 
   const subject = process.env.RESEND_SUBJECT || "Exposition Ombres & Lumières";
-  const textContent = `En espérant vous voir à l'exposition,\nJean-Michel Leveque\nleveque.jean-michel@wanadoo.fr`;
+  const imageUrl =
+    process.env.RESEND_IMAGE_URL || "https://placehold.co/600x400?text=Image";
+  const textContent = `En espérant vous voir à l'exposition,\nJean-Michel Leveque\nleveque.jean-michel@wanadoo.fr\n\nAffiche : ${imageUrl}`;
 
   const html = `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px">
     <p style="margin:0 0 16px">En espérant vous voir à l'exposition,</p>
     <p style="margin:0">Jean-Michel Leveque</p>
-    <p style="margin:0"><a href="mailto:leveque.jean-michel@wanadoo.fr" style="color:#1a73e8">leveque.jean-michel@wanadoo.fr</a></p>
+    <p style="margin:0 0 24px"><a href="mailto:leveque.jean-michel@wanadoo.fr" style="color:#1a73e8">leveque.jean-michel@wanadoo.fr</a></p>
+    <div style="text-align:center"><img src="${imageUrl}" alt="Affiche de l'exposition Ombres et Lumières" style="max-width:100%;height:auto" /></div>
   </div>`;
 
   const resend = new Resend(apiKey);
