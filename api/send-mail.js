@@ -46,19 +46,10 @@ module.exports = async function handler(req, res) {
   }
 
   const subject = process.env.RESEND_SUBJECT || "Exposition Ombres & Lumières";
-  const imageUrl =
-    process.env.RESEND_IMAGE_URL || "https://placehold.co/600x400?text=Image";
-  const siteUrl = "https://carpentier-exposition.fr/";
-  const textContent = `Bonjour,\n\nVous trouverez ci-dessous l'affiche de l'exposition ayant lieu du 30 avril au 13 mai 2026.\n\nLien vers l'affiche : ${imageUrl}\n\nRetrouvez toutes les informations sur : ${siteUrl}\n\nEn espérant vous voir à l'exposition,\nJean-Michel Leveque\nleveque.jean-michel@wanadoo.fr`;
+  const textContent = `En espérant vous voir à l'exposition,\nJean-Michel Leveque\nleveque.jean-michel@wanadoo.fr`;
 
   const html = `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px">
-    <p style="margin:0 0 16px">Bonjour,</p>
-    <p style="margin:0 0 16px">Vous trouverez ci-dessous l'affiche de l'exposition ayant lieu du 30 avril au 13 mai 2026.</p>
-    <p style="margin:0 0 16px">Nous vous invitons à venir découvrir cette exposition qui mettra en lumière les œuvres de l'artiste.</p>
-    <p style="margin:0 0 16px">L'exposition se tiendra du mercredi 30 avril au mardi 13 mai 2026. Nous serions ravis de vous y accueillir.</p>
-    <div style="text-align:center;margin:24px 0"><img src="${imageUrl}" alt="Affiche de l'exposition Ombres et Lumières - du 30 avril au 13 mai 2026" style="max-width:100%;height:auto" /></div>
-    <p style="margin:16px 0 0">Retrouvez toutes les informations sur : <a href="${siteUrl}" style="color:#1a73e8">${siteUrl}</a></p>
-    <p style="margin:16px 0 0">En espérant vous voir à l'exposition,</p>
+    <p style="margin:0 0 16px">En espérant vous voir à l'exposition,</p>
     <p style="margin:0">Jean-Michel Leveque</p>
     <p style="margin:0"><a href="mailto:leveque.jean-michel@wanadoo.fr" style="color:#1a73e8">leveque.jean-michel@wanadoo.fr</a></p>
   </div>`;
