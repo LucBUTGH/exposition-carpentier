@@ -912,6 +912,26 @@ a {
   background: rgba(192, 57, 43, 0.1);
 }
 
+/* Delete all button */
+.btn-danger {
+  background: #e74c3c;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 1rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+.btn-danger:hover {
+  background: #c0392b;
+}
+.btn-danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* Highlight on search */
 .inscrits-table td mark {
   background: rgba(184, 146, 46, 0.25);

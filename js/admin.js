@@ -383,8 +383,40 @@ function escapeRe(str) {
 
 function initInscrits() {
   const search = $("#inscrits-search");
-  if (!search) return;
-  search.addEventListener("input", () => renderInscrits(search.value));
+  if (search) {
+    search.addEventListener("input", () => renderInscrits(search.value));
+  }
+
+  const deleteAllBtn = $("#btn-delete-all-subscribers");
+  if (deleteAllBtn) {
+    deleteAllBtn.addEventListener("click", async () => {
+      if (mailingList.length === 0) {
+        showToast("La liste est déjà vide.");
+        return;
+      }
+      if (!confirm(`Supprimer les ${mailingList.length} adresse(s) de la liste ?`)) return;
+
+      deleteAllBtn.disabled = true;
+      deleteAllBtn.textContent = "Suppression…";
+
+      const res = await fetch("/api/subscribers?all=1", {
+        method: "DELETE",
+        credentials: "same-origin",
+      });
+
+      deleteAllBtn.disabled = false;
+      deleteAllBtn.textContent = "Supprimer la liste";
+
+      if (res.ok) {
+        mailingList = [];
+        updateMailingUI();
+        renderInscrits();
+        showToast("Liste supprimée.");
+      } else {
+        showToast("Erreur lors de la suppression.");
+      }
+    });
+  }
 }
 
 /* ── Send mail ── */

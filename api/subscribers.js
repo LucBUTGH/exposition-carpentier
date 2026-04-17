@@ -100,9 +100,16 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  // ── DELETE — suppression d'un email ──
+  // ── DELETE — suppression d'un email ou de toute la liste ──
   if (req.method === 'DELETE') {
     const email = (req.query.email || '').trim().toLowerCase();
+
+    // DELETE /api/subscribers?all=1 → vider la liste
+    if (req.query.all === '1') {
+      await saveSubscribers([]);
+      return json(res, 200, { ok: true, total: 0 });
+    }
+
     if (!email) return json(res, 400, { error: 'Email requis' });
 
     const current = await getSubscribers();
